@@ -337,7 +337,7 @@ public static class FragmentA extends ListFragment {
 ```
 
 # Service
-## 生命周期：
+## 生命周期
 ![](https://upload-images.jianshu.io/upload_images/944365-cf5c1a9d2dddaaca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/456/format/webp)
 | 值 | 说明 |
 |-----|-----|
@@ -345,7 +345,7 @@ public static class FragmentA extends ListFragment {
 | START_STICKY | 如果系统在 onStartCommand() 返回后终止服务，则会重建服务并调用 onStartCommand()，但不会重新传递最后一个 Intent。相反，除非有挂起 Intent 要启动服务（在这种情况下，将传递这些 Intent ），否则系统会通过空 Intent 调用 onStartCommand()。这适用于不执行命令、但无限期运行并等待作业的媒体播放器（或类似服务 |
 | START_REDELIVER_INTENT | 如果系统在 onStartCommand() 返回后终止服务，则会重建服务，并通过传递给服务的最后一个 Intent 调用 onStartCommand()。任何挂起 Intent 均依次传递。这适用于主动执行应该立即恢复的作业（例如下载文件）的服务 |
 
-## 启用前台服务：
+## 启用前台服务
 ```java
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 ```
