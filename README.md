@@ -4,7 +4,7 @@
 整理的知识点会有Java、Android SDK、Android 源码、其他的一些计算机基础以及常见的面试题等几个部分，往后的一个月时间里会陆续补充更新。
 
 目录：  
-## **Java 知识点汇总**
+## Java 知识点汇总
   * [jvm](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#jvm)
      * [jvm工作流程](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#jvm工作流程)
      * [运行时数据区（Runtime Data Area）](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#运行时数据区runtime-data-area)
@@ -37,7 +37,7 @@
   * [引用类型](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#引用类型)
 
 &nbsp;
-* **Android 知识点汇总**
+## Android 知识点汇总
    * [Dalvik 和 ART](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#dalvik-和-art)
    * [Activity](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#activity)
       * [生命周期](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#生命周期)
@@ -118,7 +118,7 @@
       * [线程池](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#线程池)
       
 &nbsp;
-- **常见面试算法题汇总**
+## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
       * [比较排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#比较排序)
          * [冒泡排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#冒泡排序)
