@@ -4,7 +4,7 @@
 整理的知识点会有Java、Android SDK、Android 源码、其他的一些计算机基础以及常见的面试题等几个部分，往后的一个月时间里会陆续补充更新。
 
 目录：  
-* [Java 知识点汇总](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md)
+* **Java 知识点汇总**
   * [jvm](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#jvm)
      * [jvm工作流程](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#jvm工作流程)
      * [运行时数据区（Runtime Data Area）](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#运行时数据区runtime-data-area)
