@@ -119,7 +119,7 @@
       * [HandlerThread](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#handlerthread)
       * [IntentService](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#intentservice)
       * [线程池](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#线程池)
-      * [Recyclerview 优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#recyclerview-%E4%BC%98%E5%8C%96)
+   * [Recyclerview 优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#recyclerview-%E4%BC%98%E5%8C%96)
       
 &nbsp;
 ## 常见面试算法题汇总
