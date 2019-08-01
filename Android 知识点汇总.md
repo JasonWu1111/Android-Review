@@ -1490,13 +1490,58 @@ public ThreadPoolExecutor(int corePoolSize,
 | ScheduledThreadPool | Executors.newScheduledThreadPool(int corePoolSize) | 核心线程数是固定的，非核心线程数没有限制，非核心线程闲置时立刻回收，主要用于执行定时任务和固定周期的重复任务
 | SingleThreadExecutor | Executors.newSingleThreadExecutor() | 只有一个核心线程，确保所有任务在同一线程中按顺序执行
 
+# RecyclerView 优化
+- 数据处理和视图加载分离：数据的处理逻辑尽可能放在异步处理，onBindViewHolder 方法中只处理数据填充到视图中。
 
+- 数据优化：分页拉取远端数据，对拉取下来的远端数据进行缓存，提升二次加载速度；对于新增或者删除数据通过 DiffUtil 来进行局部刷新数据，而不是一味地全局刷新数据。
 
+示例
+```java
+public class AdapterDiffCallback extends DiffUtil.Callback {
+    
+    private List<String> mOldList;
+    private List<String> mNewList;
+    
+    public AdapterDiffCallback(List<String> oldList, List<String> newList) {
+        mOldList = oldList;
+        mNewList = newList;
+        DiffUtil.DiffResult
+    }
+    
+    @Override
+    public int getOldListSize() {
+        return mOldList.size();
+    }
 
+    @Override
+    public int getNewListSize() {
+        return mNewList.size();
+    }
 
+    @Override
+    public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+        return mOldList.get(oldItemPosition).getClass().equals(mNewList.get(newItemPosition).getClass());
+    }
 
+    @Override
+    public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+        return mOldList.get(oldItemPosition).equals(mNewList.get(newItemPosition));
+    }
+}
+```
+```java
+DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new AdapterDiffCallback(oldList, newList));
+diffResult.dispatchUpdatesTo(mAdapter);
+```
 
+- 布局优化：减少布局层级，简化 ItemView
 
+- 升级 RecycleView 版本到 25.1.0 及以上使用 Prefetch 功能
 
+- 通过重写 RecyclerView.onViewRecycled(holder) 来回收资源
 
+- 如果 Item 高度是固定的话，可以使用 RecyclerView.setHasFixedSize(true); 来避免 requestLayout 浪费资源
 
+- 对 ItemView 设置监听器，不要对每个 Item 都调用 addXxListener，应该大家公用一个 XxListener，根据 ID 来进行不同的操作，优化了对象的频繁创建带来的资源消耗
+
+- 如果多个 RecycledView 的 Adapter 是一样的，比如嵌套的 RecyclerView 中存在一样的 Adapter，可以通过设置 RecyclerView.setRecycledViewPool(pool)，来共用一个 RecycledViewPool。
