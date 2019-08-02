@@ -924,6 +924,7 @@ Android P 支持最新的全面屏以及为摄像头和扬声器预留空间的�
 | getSafeInsetBottom() | 返回安全区域距离屏幕底部的距离，单位是px
 
 Android P 中 WindowManager.LayoutParams 新增了一个布局参数属性 layoutInDisplayCutoutMode：
+
 | 模式 | 模式说明
 |--|--
 | LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT | 只有当DisplayCutout完全包含在系统栏中时，才允许窗口延伸到DisplayCutout区域。 否则，窗口布局不与DisplayCutout区域重叠。
