@@ -913,6 +913,7 @@ private static void setCustomDensity(@NonNull Activity activity, @NonNull final 
 
 ## 刘海屏适配
 - Android P 刘海屏适配方案
+
 Android P 支持最新的全面屏以及为摄像头和扬声器预留空间的凹口屏幕。通过全新的 DisplayCutout 类，可以确定非功能区域的位置和形状，这些区域不应显示内容。要确定这些凹口屏幕区域是否存在及其位置，使用 getDisplayCutout() 函数。
 
 | DisplayCutout 类方法 | 说明
@@ -932,6 +933,7 @@ Android P 中 WindowManager.LayoutParams 新增了一个布局参数属性 layou
 | LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | 该窗口始终允许延伸到屏幕短边上的DisplayCutout区域。
 
 - Android P 之前的刘海屏适配
+
 不同厂商的刘海屏适配方案不尽相同，需分别查阅各自的开发者文档。
 
 # Context
