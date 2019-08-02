@@ -911,6 +911,28 @@ private static void setCustomDensity(@NonNull Activity activity, @NonNull final 
 }
 ```
 
+## 刘海屏适配
+- Android P 刘海屏适配方案
+Android P 支持最新的全面屏以及为摄像头和扬声器预留空间的凹口屏幕。通过全新的 DisplayCutout 类，可以确定非功能区域的位置和形状，这些区域不应显示内容。要确定这些凹口屏幕区域是否存在及其位置，使用 getDisplayCutout() 函数。
+
+| DisplayCutout 类方法 | 说明
+|--|--
+| getBoundingRects() | 返回Rects的列表，每个Rects都是显示屏上非功能区域的边界矩形
+| getSafeInsetLeft () | 返回安全区域距离屏幕左边的距离，单位是px
+| getSafeInsetRight () | 返回安全区域距离屏幕右边的距离，单位是px
+| getSafeInsetTop () | 返回安全区域距离屏幕顶部的距离，单位是px
+| getSafeInsetBottom() | 返回安全区域距离屏幕底部的距离，单位是px
+
+Android P 中 WindowManager.LayoutParams 新增了一个布局参数属性 layoutInDisplayCutoutMode：
+| 模式 | 模式说明
+|--|--
+| LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT | 只有当DisplayCutout完全包含在系统栏中时，才允许窗口延伸到DisplayCutout区域。 否则，窗口布局不与DisplayCutout区域重叠。
+| LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER | 该窗口决不允许与DisplayCutout区域重叠。
+| LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES | 该窗口始终允许延伸到屏幕短边上的DisplayCutout区域。
+
+- Android P 之前的刘海屏适配
+不同厂商的刘海屏适配方案不尽相同，需分别查阅各自的开发者文档。
+
 # Context
 Context本身是一个抽象类，是对一系列系统服务接口的封装，包括：内部资源、包、类加载、I/O操作、权限、主线程、IPC和组件启动等操作的管理。ContextImpl, Activity, Service, Application这些都是Context的直接或间接子类, 关系如下:
 
