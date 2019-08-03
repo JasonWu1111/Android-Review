@@ -291,3 +291,128 @@ retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 - 视图状态较多，ViewModel 的构建和维护的成本都会比较高
 - 但是由于数据和视图的双向绑定，导致出现问题时不太好定位来源
 
+# 设计模式
+| 模式 & 描述 | 包括
+|--|--
+| **创建型模式**<br>提供了一种在创建对象的同时隐藏创建逻辑的方式。| 工厂模式（Factory Pattern）<br>抽象工厂模式（Abstract Factory Pattern）<br>单例模式（Singleton Pattern）<br>建造者模式（Builder Pattern）<br>原型模式（Prototype Pattern）
+| **结构型模式**<br>关注类和对象的组合。| 适配器模式（Adapter Pattern）<br>桥接模式（Bridge Pattern）<br>过滤器模式（Filter、Criteria Pattern）<br>组合模式（Composite Pattern）<br>装饰器模式（Decorator Pattern）<br>外观模式（Facade Pattern）<br>享元模式（Flyweight Pattern）<br>代理模式（Proxy Pattern）
+| **行为型模式**<br>特别关注对象之间的通信。| 责任链模式（Chain of Responsibility Pattern）<br>命令模式（Command Pattern）<br>解释器模式（Interpreter Pattern）<br>迭代器模式（Iterator Pattern）<br>中介者模式（Mediator Pattern）<br>备忘录模式（Memento Pattern）<br>观察者模式（Observer Pattern）<br>状态模式（State Pattern）<br>空对象模式（Null Object Pattern）<br>策略模式（Strategy Pattern）<br>模板模式（Template Pattern）<br>访问者模式（Visitor Pattern）
+
+## 工厂模式
+```java
+Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.demo);
+```
+
+``BitmapFactory.java``
+```java
+public static Bitmap decodeResource(Resources res, int id, Options opts) {
+    validate(opts);
+    Bitmap bm = null;
+    InputStream is = null; 
+    
+    try {
+        final TypedValue value = new TypedValue();
+        is = res.openRawResource(id, value);
+
+        bm = decodeResourceStream(res, value, is, null, opts);
+    } 
+    ···
+    return bm;
+}
+```
+
+## 单例模式
+``InputMethodManager.java``
+```java
+/**
+* Retrieve the global InputMethodManager instance, creating it if it
+* doesn't already exist.
+* @hide
+*/
+public static InputMethodManager getInstance() {
+    synchronized (InputMethodManager.class) {
+        if (sInstance == null) {
+            try {
+                sInstance = new InputMethodManager(Looper.getMainLooper());
+            } catch (ServiceNotFoundException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return sInstance;
+    }
+}
+```
+
+## 建造者模式
+```java
+AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        .setTitle("Title")
+        .setMessage("Message");
+AlertDialog dialog = builder.create();
+dialog.show();
+```
+
+``AlertDialog.java``
+```java
+public class AlertDialog extends Dialog implements DialogInterface {
+    ···
+
+    public static class Builder {
+        private final AlertController.AlertParams P;
+        ···
+
+        public Builder(Context context) {
+            this(context, resolveDialogTheme(context, ResourceId.ID_NULL));
+        }
+        ···
+
+        public Builder setTitle(CharSequence title) {
+            P.mTitle = title;
+            return this;
+        }
+        ···
+
+        public Builder setMessage(CharSequence message) {
+            P.mMessage = message;
+            return this;
+        }
+        ···
+
+        public AlertDialog create() {
+            // Context has already been wrapped with the appropriate theme.
+            final AlertDialog dialog = new AlertDialog(P.mContext, 0, false);
+            P.apply(dialog.mAlert);
+            ···
+            return dialog;
+        }
+        ···
+    }
+}
+```
+
+# 原型模式
+```java
+ArrayList<T> newArrayList = (ArrayList<T>) arrayList.clone();
+```
+
+``ArrayList.java``
+```java
+/**
+ * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
+ * elements themselves are not copied.)
+ *
+ * @return a clone of this <tt>ArrayList</tt> instance
+ */
+public Object clone() {
+    try {
+        ArrayList<?> v = (ArrayList<?>) super.clone();
+        v.elementData = Arrays.copyOf(elementData, size);
+        v.modCount = 0;
+        return v;
+    } catch (CloneNotSupportedException e) {
+        // this shouldn't happen, since we are Cloneable
+        throw new InternalError(e);
+    }
+}
+```
+
