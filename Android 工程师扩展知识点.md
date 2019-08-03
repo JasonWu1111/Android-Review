@@ -254,3 +254,40 @@ android {
 retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 ```
 
+# 架构
+## MVC
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCwLhGyLdicyLzgUDKFTZVt1OgU6iaSx2IUwnygzmQzW7Renaa8hmQ62cQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+在 Android 中，三者的关系如下：
+
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCicNvEVMO9vDgukUR29Z1DCacZJwmmH1EEb7gUOZmDxolWexP01O8jfg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+由于在 Android 中 xml 布局的功能性太弱，所以 Activity 承担了绝大部分的工作，所以在 Android 中 mvc 更像：
+
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCOq89MLQX4UM3dgBTQfU72desHb1XbOWRQZINnXOCCdZCuicUiaTHhtEg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+总结：
+- 具有一定的分层，model 解耦，controller 和 view 并没有解耦
+- controller 和 view 在 Android 中无法做到彻底分离，Controller 变得臃肿不堪
+- 易于理解、开发速度快、可维护性高
+
+## MVP
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCLVgibsuVQFguBI8FBdZibLNfpvbpd6njkdGWdyR2UL6TzMOhKHFqLC0Q/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+通过引入接口 BaseView，让相应的视图组件如 Activity，Fragment去实现 BaseView，把业务逻辑放在 presenter 层中，弱化 Model 只有跟 view 相关的操作都由 View 层去完成。
+
+总结：
+- 彻底解决了 MVC 中 View 和 Controller 傻傻分不清楚的问题
+- 但是随着业务逻辑的增加，一个页面可能会非常复杂，UI的改变是非常多，会有非常多的case，这样就会造成View的接口会很庞大
+- 更容易单元测试
+
+## MVVM
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCMygIDD6xo5djkq6Y3jZo53sT2A4kKNaz8JEVRwmUnTmcAwJm0pZVWg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+在 MVP 中 View 和 Presenter 要相互持有，方便调用对方，而在 MVP 中 View 和 ViewModel 通过 Binding进行关联，他们之前的关联处理通过 DataBinding 完成。
+
+总结：
+- 很好的解决了 MVC 和 MVP 的问题
+- 视图状态较多，ViewModel 的构建和维护的成本都会比较高
+- 但是由于数据和视图的双向绑定，导致出现问题时不太好定位来源
+
