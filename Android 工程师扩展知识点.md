@@ -390,7 +390,7 @@ public class AlertDialog extends Dialog implements DialogInterface {
 }
 ```
 
-# 原型模式
+## 原型模式
 ```java
 ArrayList<T> newArrayList = (ArrayList<T>) arrayList.clone();
 ```
