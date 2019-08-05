@@ -281,7 +281,7 @@ mCursor = getContentResolver().query(
     mSelectionClause                    // Selection criteria
     mSelectionArgs,                     // Selection criteria
     mSortOrder);                        // The sort order for the returned rows
-``
+```
 
 ```java
 public class Installer extends ContentProvider {
