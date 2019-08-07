@@ -291,6 +291,141 @@ retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 - 视图状态较多，ViewModel 的构建和维护的成本都会比较高
 - 但是由于数据和视图的双向绑定，导致出现问题时不太好定位来源
 
+# Jetpack
+## 架构
+![](https://developer.android.google.cn/topic/libraries/architecture/images/final-architecture.png)
+
+## 使用示例
+``build.gradle``
+```groovy
+android {
+    ···
+    dataBinding {
+        enabled = true
+    }
+}
+dependencies {
+    ···
+    implementation "androidx.fragment:fragment-ktx:$rootProject.fragmentVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+}
+```
+
+``fragment_plant_detail.xml``
+```xml
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            ···
+            android:text="@{viewModel.plant.name}"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+```
+
+
+``PlantDetailFragment.kt``
+```kotlin
+class PlantDetailFragment : Fragment() {
+
+    private val args: PlantDetailFragmentArgs by navArgs()
+    private lateinit var shareText: String
+
+    private val plantDetailViewModel: PlantDetailViewModel by viewModels {
+        InjectorUtils.providePlantDetailViewModelFactory(requireActivity(), args.plantId)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = DataBindingUtil.inflate<FragmentPlantDetailBinding>(
+                inflater, R.layout.fragment_plant_detail, container, false).apply {
+            viewModel = plantDetailViewModel
+            lifecycleOwner = this@PlantDetailFragment
+        }
+
+        plantDetailViewModel.plant.observe(this) { plant ->
+            // 更新相关 UI
+        }
+
+        return binding.root
+    }
+}
+```
+
+``Plant.kt``
+```kotlin
+data class Plant (
+    val name: String
+)
+```
+
+``PlantDetailViewModel.kt``
+```kotlin
+class PlantDetailViewModel(
+    plantRepository: PlantRepository,
+    private val plantId: String
+) : ViewModel() {
+
+    val plant: LiveData<Plant>
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
+
+    init {
+        plant = plantRepository.getPlant(plantId)
+    }
+}
+```
+
+``PlantDetailViewModelFactory.kt``
+```kotlin
+class PlantDetailViewModelFactory(
+    private val plantRepository: PlantRepository,
+    private val plantId: String
+) : ViewModelProvider.NewInstanceFactory() {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return PlantDetailViewModel(plantRepository, plantId) as T
+    }
+}
+```
+
+``InjectorUtils.kt``
+```kotlin
+object InjectorUtils {
+    private fun getPlantRepository(context: Context): PlantRepository {
+        ···
+    }
+
+    fun providePlantDetailViewModelFactory(
+        context: Context,
+        plantId: String
+    ): PlantDetailViewModelFactory {
+        return PlantDetailViewModelFactory(getPlantRepository(context), plantId)
+    }
+}
+```
+
 # 设计模式
 | 模式 & 描述 | 包括
 |--|--
