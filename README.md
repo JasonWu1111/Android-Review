@@ -39,7 +39,6 @@
      * [死锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#死锁)
   * [引用类型](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#引用类型)
 
-&nbsp;
 ## Android 知识点汇总
    * [Dalvik 和 ART](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#dalvik-和-art)
    * [Activity](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#activity)
@@ -134,7 +133,6 @@
       * [Webview 加载优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#webview-%E5%8A%A0%E8%BD%BD%E4%BC%98%E5%8C%96)
       * [内存泄漏](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F)
 
-&nbsp;
 ## Android 扩展知识点汇总
    * [Hook](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#hook)
       * [基本流程](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#基本流程)
@@ -156,7 +154,6 @@
       * [建造者模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#建造者模式)
       * [原型模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#原型模式)
 
-&nbsp;
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
       * [比较排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#比较排序)
