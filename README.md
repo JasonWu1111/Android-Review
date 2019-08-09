@@ -153,6 +153,8 @@
       * [单例模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#单例模式)
       * [建造者模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#建造者模式)
       * [原型模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#原型模式)
+      * [适配器模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F)
+      * [观察者模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F)
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
