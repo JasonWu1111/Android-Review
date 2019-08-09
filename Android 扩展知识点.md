@@ -551,3 +551,148 @@ public Object clone() {
 }
 ```
 
+## 适配器模式
+```java
+RecyclerView recyclerView = findViewById(R.id.recycler_view);
+recyclerView.setAdapter(new MyAdapter());
+
+private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ···
+    }
+
+    ···
+}
+```
+
+``RecyclerView.java``
+```java
+···
+private void setAdapterInternal(@Nullable Adapter adapter, boolean compatibleWithPrevious,
+        boolean removeAndRecycleViews) {
+    if (mAdapter != null) {
+        mAdapter.unregisterAdapterDataObserver(mObserver);
+        mAdapter.onDetachedFromRecyclerView(this);
+    }
+    ···
+    mAdapterHelper.reset();
+    final Adapter oldAdapter = mAdapter;
+    mAdapter = adapter;
+    if (adapter != null) {
+        adapter.registerAdapterDataObserver(mObserver);
+        adapter.onAttachedToRecyclerView(this);
+    }
+    if (mLayout != null) {
+        mLayout.onAdapterChanged(oldAdapter, mAdapter);
+    }
+    mRecycler.onAdapterChanged(oldAdapter, mAdapter, compatibleWithPrevious);
+    mState.mStructureChanged = true;
+}
+
+···
+public final class Recycler {
+    @Nullable
+    ViewHolder tryGetViewHolderForPositionByDeadline(int position,
+            boolean dryRun, long deadlineNs) {
+        ···
+        ViewHolder holder = null;
+        ···
+        if (holder == null) {
+            ···
+            holder = mAdapter.createViewHolder(RecyclerView.this, type);
+            ···
+        }
+        ···
+        return holder;
+    }
+}
+
+···
+public abstract static class Adapter<VH extends ViewHolder> {
+    ···
+    @NonNull
+    public abstract VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType);
+
+    @NonNull
+    public final VH createViewHolder(@NonNull ViewGroup parent, int viewType) {
+        try {
+            TraceCompat.beginSection(TRACE_CREATE_VIEW_TAG);
+            final VH holder = onCreateViewHolder(parent, viewType);
+            ···
+            holder.mItemViewType = viewType;
+            return holder;
+        } finally {
+            TraceCompat.endSection();
+        }
+    }
+    ···
+}
+```
+
+## 观察者模式
+```java
+MyAdapter adapter = new MyAdapter();
+recyclerView.setAdapter(adapter);
+adapter.notifyDataSetChanged();
+```
+
+``RecyclerView.java``
+```java
+···
+private final RecyclerViewDataObserver mObserver = new RecyclerViewDataObserver();
+
+···
+private void setAdapterInternal(@Nullable Adapter adapter, boolean compatibleWithPrevious,
+        boolean removeAndRecycleViews) {
+    ···
+    mAdapter = adapter;
+    if (adapter != null) {
+        adapter.registerAdapterDataObserver(mObserver);
+        adapter.onAttachedToRecyclerView(this);
+    }
+    ···
+}
+
+···
+public abstract static class Adapter<VH extends ViewHolder> {
+    private final AdapterDataObservable mObservable = new AdapterDataObservable();
+    ···
+    public void registerAdapterDataObserver(@NonNull AdapterDataObserver observer) {
+        mObservable.registerObserver(observer);
+    }
+
+    ···
+    public final void notifyDataSetChanged() {
+        mObservable.notifyChanged();
+    }
+}
+
+static class AdapterDataObservable extends Observable<AdapterDataObserver> {
+    ···
+    public void notifyChanged() {
+        for (int i = mObservers.size() - 1; i >= 0; i--) {
+            mObservers.get(i).onChanged();
+        }
+    }
+    ···
+}
+
+private class RecyclerViewDataObserver extends AdapterDataObserver {
+    ···
+    @Override
+    public void onChanged() {
+        assertNotInLayoutOrScroll(null);
+        mState.mStructureChanged = true;
+
+        processDataSetCompletelyChanged(true);
+        if (!mAdapterHelper.hasPendingUpdates()) {
+            requestLayout();
+        }
+    }
+    ···
+}
+```
+
