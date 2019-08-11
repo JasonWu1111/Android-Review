@@ -1,3 +1,59 @@
+# Apk 包体优化
+## Apk 组成结构
+| 文件/文件夹 | 作用/功能
+|--|--
+| res | 包含所有没有被编译到.arsc里面的资源文件
+| lib | 引用库的文件夹
+| assets | assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等,通过AssetManager访问
+| META_INF | 存放的是签名信息，用来保证apk包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
+| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK里面，可能会存在多个dex文件
+| resources.arsc | 一些资源和标识符被编译和写入这个文件
+| Androidmanifest.xml | 编译时，应用程序的AndroidManifest.xml被转化成二进制格式
+
+## 整体优化
+- 分离应用的独立模块，以插件的形式加载
+- 解压APK，重新用 7zip 进行压缩
+- 用 apksigner 签名工具 替代 java提供的jarsigner签名工具
+
+## 资源优化 
+- 可以只用一套资源图片，一般采用xhdpi下的资源图片
+- 通过扫描文件的MD5值，找出名字不同，内容相同的图片并删除
+- 通过 Lint 工具扫描工程资源，移除无用资源
+- 通过 Gradle 参数配置 shrinkResources=true
+- 对 png 图片压缩
+- 图片资源考虑采用 WebP 格式
+- 避免使用帧动画，可使用 Lottie 动画库
+- 优先考虑能否用 shape 代码、.9图、svg矢量图、VectorDrawable类来替换传统的图片
+
+## 代码优化
+- 启用混淆以移除无用代码
+- 剔除 R 文件
+- 用注解替代枚举
+
+## .arsc文件优化 
+- 移除未使用的备用资源来优化.arsc文件
+```groovy
+android {
+    defaultConfig {
+        ...
+        resConfigs "zh", "zh_CN", "zh_HK", "en"
+    }
+}
+```
+
+## lib目录优化
+- 只提供对主流架构的支持，比如 arm，对于 mips 和 x86 架构可以考虑不提供支持
+```groovy
+android {
+    defaultConfig {
+        ...
+        ndk {
+            abiFilters  "armeabi-v7a"
+        }
+    }
+}
+```
+
 # Hook
 ## 基本流程
 1、根据需求确定 要hook的对象  
