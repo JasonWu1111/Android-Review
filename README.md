@@ -44,7 +44,6 @@
   * [引用类型](https://github.com/JasonWu1111/Android-Review/blob/master/Java%20知识点汇总.md#引用类型)
 
 ## Android 知识点汇总
-   * [Dalvik 和 ART](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#dalvik-和-art)
    * [Activity](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#activity)
       * [生命周期](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#生命周期)
       * [启动模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#启动模式)
@@ -138,11 +137,25 @@
       * [内存泄漏](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F)
 
 ## Android 扩展知识点汇总
+   * [ART](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#art)
+      * [ART 功能](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#art-%E5%8A%9F%E8%83%BD)
+         * [预先 (AOT) 编译](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E9%A2%84%E5%85%88-aot-%E7%BC%96%E8%AF%91)
+         * [垃圾回收优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E4%BC%98%E5%8C%96)
+         * [开发和调试方面的优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E5%BC%80%E5%8F%91%E5%92%8C%E8%B0%83%E8%AF%95%E6%96%B9%E9%9D%A2%E7%9A%84%E4%BC%98%E5%8C%96)
+      * [ART GC](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#art-gc)
+   * [Apk 包体优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#apk-%E5%8C%85%E4%BD%93%E4%BC%98%E5%8C%96)
+       * [Apk 组成结构](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#apk-%E7%BB%84%E6%88%90%E7%BB%93%E6%9E%84)
+       * [整体优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E6%95%B4%E4%BD%93%E4%BC%98%E5%8C%96)
+       * [资源优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E8%B5%84%E6%BA%90%E4%BC%98%E5%8C%96)
+       * [代码优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E4%BB%A3%E7%A0%81%E4%BC%98%E5%8C%96)
+       * [.arsc文件优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#arsc%E6%96%87%E4%BB%B6%E4%BC%98%E5%8C%96)
+       * [lib目录优化](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#lib%E7%9B%AE%E5%BD%95%E4%BC%98%E5%8C%96)
    * [Hook](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#hook)
       * [基本流程](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#基本流程)
       * [使用示例](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#使用示例)
    * [Proguard](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#proguard)
       * [公共模板](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#公共模板)
+      * [常用的自定义混淆规则](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E5%B8%B8%E7%94%A8%E7%9A%84%E8%87%AA%E5%AE%9A%E4%B9%89%E6%B7%B7%E6%B7%86%E8%A7%84%E5%88%99)
       * [aar中增加独立的混淆配置](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#aar中增加独立的混淆配置)
       * [检查混淆和追踪异常](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#检查混淆和追踪异常)
    * [架构](https://github.com/JasonWu1111/Android-Review/blob/master/Android%20%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#架构)
