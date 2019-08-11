@@ -220,6 +220,38 @@ Proguard 具有以下三个功能：
 }
 ```
 
+##  常用的自定义混淆规则
+```xml
+# 通配符*，匹配任意长度字符，但不含包名分隔符(.)
+# 通配符**，匹配任意长度字符，并且包含包名分隔符(.)
+
+# 不混淆某个类
+-keep public class com.jasonwu.demo.Test { *; }
+
+# 不混淆某个包所有的类
+-keep class com.jasonwu.demo.test.** { *; }
+
+# 不混淆某个类的子类
+-keep public class * com.jasonwu.demo.Test { *; }
+
+# 不混淆所有类名中包含了 ``model`` 的类及其成员
+-keep public class **.*model*.** {*;}
+
+# 不混淆某个接口的实现
+-keep class * implements com.jasonwu.demo.TestInterface { *; }
+
+# 不混淆某个类的构造方法
+-keepclassmembers class com.jasonwu.demo.Test { 
+  public <init>(); 
+}
+
+# 不混淆某个类的特定的方法
+-keepclassmembers class com.jasonwu.demo.Test { 
+  public void test(java.lang.String); 
+}
+```
+
+
 ## aar中增加独立的混淆配置
 ``build.gralde``
 ```gradle
