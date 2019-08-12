@@ -287,7 +287,7 @@ public class CustomManager{
     private CustomManager(){}
  
     private static class CustomManagerHolder {
-        private static CustomManager INSTANCE = new CustomManager();
+        private static final CustomManager INSTANCE = new CustomManager();
     }
  
     public static CustomManager getInstance() {
