@@ -674,6 +674,12 @@ public class MyApplication extends Application {
 }
 ```
 
+>一般来说，使用多进程会造成以下几个方面的问题：
+>- 静态成员和单例模式完全失效
+>- 线程同步机制完全失效
+>- SharedPreferences 的可靠性下降
+>- Application 会多次创建
+
 ## 进程存活
 ### OOM_ADJ
 | ADJ级别 | 取值 | 解释
