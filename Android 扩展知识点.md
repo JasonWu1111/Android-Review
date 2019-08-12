@@ -1,3 +1,109 @@
+# ART
+ART 代表 Android Runtime，其处理应用程序执行的方式完全不同于 Dalvik，Dalvik 是依靠一个 Just-In-Time (JIT) 编译器去解释字节码。开发者编译后的应用代码需要通过一个解释器在用户的设备上运行，这一机制并不高效，但让应用能更容易在不同硬件和架构上运 行。ART 则完全改变了这套做法，在应用安装时就预编译字节码到机器语言，这一机制叫 Ahead-Of-Time (AOT）编译。在移除解释代码这一过程后，应用程序执行将更有效率，启动更快。
+
+## ART 功能
+### 预先 (AOT) 编译
+ART 引入了预先编译机制，可提高应用的性能。ART 还具有比 Dalvik 更严格的安装时验证。在安装时，ART 使用设备自带的 dex2oat 工具来编译应用。该实用工具接受 DEX 文件作为输入，并为目标设备生成经过编译的应用可执行文件。该工具应能够顺利编译所有有效的 DEX 文件。
+
+### 垃圾回收优化
+垃圾回收 (GC) 可能有损于应用性能，从而导致显示不稳定、界面响应速度缓慢以及其他问题。ART 通过以下几种方式对垃圾回收做了优化：
+- 只有一次（而非两次）GC 暂停
+- 在 GC 保持暂停状态期间并行处理
+- 在清理最近分配的短时对象这种特殊情况中，回收器的总 GC 时间更短
+- 优化了垃圾回收的工效，能够更加及时地进行并行垃圾回收，这使得 GC_FOR_ALLOC 事件在典型用例中极为罕见
+- 压缩 GC 以减少后台内存使用和碎片
+
+### 开发和调试方面的优化
+- 支持采样分析器
+  
+一直以来，开发者都使用 Traceview 工具（用于跟踪应用执行情况）作为分析器。虽然 Traceview 可提供有用的信息，但每次方法调用产生的开销会导致 Dalvik 分析结果出现偏差，而且使用该工具明显会影响运行时性能
+
+ART 添加了对没有这些限制的专用采样分析器的支持，因而可更准确地了解应用执行情况，而不会明显减慢速度。KitKat 版本为 Dalvik 的 Traceview 添加了采样支持。
+
+
+- 支持更多调试功能
+
+ART 支持许多新的调试选项，特别是与监控和垃圾回收相关的功能。例如，查看堆栈跟踪中保留了哪些锁，然后跳转到持有锁的线程；询问指定类的当前活动的实例数、请求查看实例，以及查看使对象保持有效状态的参考；过滤特定实例的事件（如断点）等。
+
+- 优化了异常和崩溃报告中的诊断详细信息
+  
+当发生运行时异常时，ART 会为您提供尽可能多的上下文和详细信息。ART 会提供 ``java.lang.ClassCastException``、``java.lang.ClassNotFoundException`` 和 ``java.lang.NullPointerException`` 的更多异常详细信息（较高版本的 Dalvik 会提供 ``java.lang.ArrayIndexOutOfBoundsException`` 和 ``java.lang.ArrayStoreException`` 的更多异常详细信息，这些信息现在包括数组大小和越界偏移量；ART 也提供这类信息）。
+
+## ART GC
+ART 有多个不同的 GC 方案，这些方案包括运行不同垃圾回收器。默认方案是 CMS（并发标记清除）方案，主要使用粘性 CMS 和部分 CMS。粘性 CMS 是 ART 的不移动分代垃圾回收器。它仅扫描堆中自上次 GC 后修改的部分，并且只能回收自上次 GC 后分配的对象。除 CMS 方案外，当应用将进程状态更改为察觉不到卡顿的进程状态（例如，后台或缓存）时，ART 将执行堆压缩。
+
+除了新的垃圾回收器之外，ART 还引入了一种基于位图的新内存分配程序，称为 RosAlloc（插槽运行分配器）。此新分配器具有分片锁，当分配规模较小时可添加线程的本地缓冲区，因而性能优于 DlMalloc。
+
+与 Dalvik 相比，ART CMS 垃圾回收计划在很多方面都有一定的改善：
+
+- 与 Dalvik 相比，暂停次数从 2 次减少到 1 次。Dalvik 的第一次暂停主要是为了进行根标记，即在 ART 中进行并发标记，让线程标记自己的根，然后马上恢复运行。
+
+- 与 Dalvik 类似，ART GC 在清除过程开始之前也会暂停 1 次。两者在这方面的主要差异在于：在此暂停期间，某些 Dalvik 环节在 ART 中并发进行。这些环节包括 java.lang.ref.Reference 处理、系统弱清除（例如，jni 弱全局等）、重新标记非线程根和卡片预清理。在 ART 暂停期间仍进行的阶段包括扫描脏卡片以及重新标记线程根，这些操作有助于缩短暂停时间。
+
+- 相对于 Dalvik，ART GC 改进的最后一个方面是粘性 CMS 回收器增加了 GC 吞吐量。不同于普通的分代 GC，粘性 CMS 不移动。系统会将年轻对象保存在一个分配堆栈（基本上是 java.lang.Object 数组）中，而非为其设置一个专属区域。这样可以避免移动所需的对象以维持低暂停次数，但缺点是容易在堆栈中加入大量复杂对象图像而使堆栈变长。
+
+ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回收器。使用移动 GC 的目的在于通过堆压缩来减少后台应用使用的内存。目前，触发堆压缩的事件是 ActivityManager 进程状态的改变。当应用转到后台运行时，它会通知 ART 已进入不再“感知”卡顿的进程状态。此时 ART 会进行一些操作（例如，压缩和监视器压缩），从而导致应用线程长时间暂停。目前正在使用的两个移动 GC 是同构空间压缩和半空间压缩。
+
+- 半空间压缩将对象在两个紧密排列的碰撞指针空间之间进行移动。这种移动 GC 适用于小内存设备，因为它可以比同构空间压缩稍微多节省一点内存。额外节省出的空间主要来自紧密排列的对象，这样可以避免 RosAlloc/DlMalloc 分配器占用开销。由于 CMS 仍在前台使用，且不能从碰撞指针空间中进行收集，因此当应用在前台使用时，半空间还要再进行一次转换。这种情况并不理想，因为它可能引起较长时间的暂停。
+
+- 同构空间压缩通过将对象从一个 RosAlloc 空间复制到另一个 RosAlloc 空间来实现。这有助于通过减少堆碎片来减少内存使用量。这是目前非低内存设备的默认压缩模式。相比半空间压缩，同构空间压缩的主要优势在于应用从后台切换到前台时无需进行堆转换。
+
+# Apk 包体优化
+## Apk 组成结构
+| 文件/文件夹 | 作用/功能
+|--|--
+| res | 包含所有没有被编译到.arsc里面的资源文件
+| lib | 引用库的文件夹
+| assets | assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等,通过AssetManager访问
+| META_INF | 存放的是签名信息，用来保证apk包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
+| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK里面，可能会存在多个dex文件
+| resources.arsc | 一些资源和标识符被编译和写入这个文件
+| Androidmanifest.xml | 编译时，应用程序的AndroidManifest.xml被转化成二进制格式
+
+## 整体优化
+- 分离应用的独立模块，以插件的形式加载
+- 解压APK，重新用 7zip 进行压缩
+- 用 apksigner 签名工具 替代 java提供的jarsigner签名工具
+
+## 资源优化 
+- 可以只用一套资源图片，一般采用xhdpi下的资源图片
+- 通过扫描文件的MD5值，找出名字不同，内容相同的图片并删除
+- 通过 Lint 工具扫描工程资源，移除无用资源
+- 通过 Gradle 参数配置 shrinkResources=true
+- 对 png 图片压缩
+- 图片资源考虑采用 WebP 格式
+- 避免使用帧动画，可使用 Lottie 动画库
+- 优先考虑能否用 shape 代码、.9图、svg矢量图、VectorDrawable类来替换传统的图片
+
+## 代码优化
+- 启用混淆以移除无用代码
+- 剔除 R 文件
+- 用注解替代枚举
+
+## .arsc文件优化 
+- 移除未使用的备用资源来优化.arsc文件
+```groovy
+android {
+    defaultConfig {
+        ...
+        resConfigs "zh", "zh_CN", "zh_HK", "en"
+    }
+}
+```
+
+## lib目录优化
+- 只提供对主流架构的支持，比如 arm，对于 mips 和 x86 架构可以考虑不提供支持
+```groovy
+android {
+    defaultConfig {
+        ...
+        ndk {
+            abiFilters  "armeabi-v7a"
+        }
+    }
+}
+```
+
 # Hook
 ## 基本流程
 1、根据需求确定 要hook的对象  
@@ -220,6 +326,38 @@ Proguard 具有以下三个功能：
 }
 ```
 
+##  常用的自定义混淆规则
+```xml
+# 通配符*，匹配任意长度字符，但不含包名分隔符(.)
+# 通配符**，匹配任意长度字符，并且包含包名分隔符(.)
+
+# 不混淆某个类
+-keep public class com.jasonwu.demo.Test { *; }
+
+# 不混淆某个包所有的类
+-keep class com.jasonwu.demo.test.** { *; }
+
+# 不混淆某个类的子类
+-keep public class * com.jasonwu.demo.Test { *; }
+
+# 不混淆所有类名中包含了 ``model`` 的类及其成员
+-keep public class **.*model*.** {*;}
+
+# 不混淆某个接口的实现
+-keep class * implements com.jasonwu.demo.TestInterface { *; }
+
+# 不混淆某个类的构造方法
+-keepclassmembers class com.jasonwu.demo.Test { 
+  public <init>(); 
+}
+
+# 不混淆某个类的特定的方法
+-keepclassmembers class com.jasonwu.demo.Test { 
+  public void test(java.lang.String); 
+}
+```
+
+
 ## aar中增加独立的混淆配置
 ``build.gralde``
 ```gradle
@@ -290,6 +428,141 @@ retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 - 很好的解决了 MVC 和 MVP 的问题
 - 视图状态较多，ViewModel 的构建和维护的成本都会比较高
 - 但是由于数据和视图的双向绑定，导致出现问题时不太好定位来源
+
+# Jetpack
+## 架构
+![](https://developer.android.google.cn/topic/libraries/architecture/images/final-architecture.png)
+
+## 使用示例
+``build.gradle``
+```groovy
+android {
+    ···
+    dataBinding {
+        enabled = true
+    }
+}
+dependencies {
+    ···
+    implementation "androidx.fragment:fragment-ktx:$rootProject.fragmentVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$rootProject.lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.lifecycleVersion"
+}
+```
+
+``fragment_plant_detail.xml``
+```xml
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            ···
+            android:text="@{viewModel.plant.name}"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+```
+
+
+``PlantDetailFragment.kt``
+```kotlin
+class PlantDetailFragment : Fragment() {
+
+    private val args: PlantDetailFragmentArgs by navArgs()
+    private lateinit var shareText: String
+
+    private val plantDetailViewModel: PlantDetailViewModel by viewModels {
+        InjectorUtils.providePlantDetailViewModelFactory(requireActivity(), args.plantId)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = DataBindingUtil.inflate<FragmentPlantDetailBinding>(
+                inflater, R.layout.fragment_plant_detail, container, false).apply {
+            viewModel = plantDetailViewModel
+            lifecycleOwner = this@PlantDetailFragment
+        }
+
+        plantDetailViewModel.plant.observe(this) { plant ->
+            // 更新相关 UI
+        }
+
+        return binding.root
+    }
+}
+```
+
+``Plant.kt``
+```kotlin
+data class Plant (
+    val name: String
+)
+```
+
+``PlantDetailViewModel.kt``
+```kotlin
+class PlantDetailViewModel(
+    plantRepository: PlantRepository,
+    private val plantId: String
+) : ViewModel() {
+
+    val plant: LiveData<Plant>
+
+    override fun onCleared() {
+        super.onCleared()
+        viewModelScope.cancel()
+    }
+
+    init {
+        plant = plantRepository.getPlant(plantId)
+    }
+}
+```
+
+``PlantDetailViewModelFactory.kt``
+```kotlin
+class PlantDetailViewModelFactory(
+    private val plantRepository: PlantRepository,
+    private val plantId: String
+) : ViewModelProvider.NewInstanceFactory() {
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        return PlantDetailViewModel(plantRepository, plantId) as T
+    }
+}
+```
+
+``InjectorUtils.kt``
+```kotlin
+object InjectorUtils {
+    private fun getPlantRepository(context: Context): PlantRepository {
+        ···
+    }
+
+    fun providePlantDetailViewModelFactory(
+        context: Context,
+        plantId: String
+    ): PlantDetailViewModelFactory {
+        return PlantDetailViewModelFactory(getPlantRepository(context), plantId)
+    }
+}
+```
 
 # 设计模式
 | 模式 & 描述 | 包括
@@ -413,6 +686,151 @@ public Object clone() {
         // this shouldn't happen, since we are Cloneable
         throw new InternalError(e);
     }
+}
+```
+
+## 适配器模式
+```java
+RecyclerView recyclerView = findViewById(R.id.recycler_view);
+recyclerView.setAdapter(new MyAdapter());
+
+private class MyAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        ···
+    }
+
+    ···
+}
+```
+
+``RecyclerView.java``
+```java
+···
+private void setAdapterInternal(@Nullable Adapter adapter, boolean compatibleWithPrevious,
+        boolean removeAndRecycleViews) {
+    if (mAdapter != null) {
+        mAdapter.unregisterAdapterDataObserver(mObserver);
+        mAdapter.onDetachedFromRecyclerView(this);
+    }
+    ···
+    mAdapterHelper.reset();
+    final Adapter oldAdapter = mAdapter;
+    mAdapter = adapter;
+    if (adapter != null) {
+        adapter.registerAdapterDataObserver(mObserver);
+        adapter.onAttachedToRecyclerView(this);
+    }
+    if (mLayout != null) {
+        mLayout.onAdapterChanged(oldAdapter, mAdapter);
+    }
+    mRecycler.onAdapterChanged(oldAdapter, mAdapter, compatibleWithPrevious);
+    mState.mStructureChanged = true;
+}
+
+···
+public final class Recycler {
+    @Nullable
+    ViewHolder tryGetViewHolderForPositionByDeadline(int position,
+            boolean dryRun, long deadlineNs) {
+        ···
+        ViewHolder holder = null;
+        ···
+        if (holder == null) {
+            ···
+            holder = mAdapter.createViewHolder(RecyclerView.this, type);
+            ···
+        }
+        ···
+        return holder;
+    }
+}
+
+···
+public abstract static class Adapter<VH extends ViewHolder> {
+    ···
+    @NonNull
+    public abstract VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType);
+
+    @NonNull
+    public final VH createViewHolder(@NonNull ViewGroup parent, int viewType) {
+        try {
+            TraceCompat.beginSection(TRACE_CREATE_VIEW_TAG);
+            final VH holder = onCreateViewHolder(parent, viewType);
+            ···
+            holder.mItemViewType = viewType;
+            return holder;
+        } finally {
+            TraceCompat.endSection();
+        }
+    }
+    ···
+}
+```
+
+## 观察者模式
+```java
+MyAdapter adapter = new MyAdapter();
+recyclerView.setAdapter(adapter);
+adapter.notifyDataSetChanged();
+```
+
+``RecyclerView.java``
+```java
+···
+private final RecyclerViewDataObserver mObserver = new RecyclerViewDataObserver();
+
+···
+private void setAdapterInternal(@Nullable Adapter adapter, boolean compatibleWithPrevious,
+        boolean removeAndRecycleViews) {
+    ···
+    mAdapter = adapter;
+    if (adapter != null) {
+        adapter.registerAdapterDataObserver(mObserver);
+        adapter.onAttachedToRecyclerView(this);
+    }
+    ···
+}
+
+···
+public abstract static class Adapter<VH extends ViewHolder> {
+    private final AdapterDataObservable mObservable = new AdapterDataObservable();
+    ···
+    public void registerAdapterDataObserver(@NonNull AdapterDataObserver observer) {
+        mObservable.registerObserver(observer);
+    }
+
+    ···
+    public final void notifyDataSetChanged() {
+        mObservable.notifyChanged();
+    }
+}
+
+static class AdapterDataObservable extends Observable<AdapterDataObserver> {
+    ···
+    public void notifyChanged() {
+        for (int i = mObservers.size() - 1; i >= 0; i--) {
+            mObservers.get(i).onChanged();
+        }
+    }
+    ···
+}
+
+private class RecyclerViewDataObserver extends AdapterDataObserver {
+    ···
+    @Override
+    public void onChanged() {
+        assertNotInLayoutOrScroll(null);
+        mState.mStructureChanged = true;
+
+        processDataSetCompletelyChanged(true);
+        if (!mAdapterHelper.hasPendingUpdates()) {
+            requestLayout();
+        }
+    }
+    ···
 }
 ```
 
