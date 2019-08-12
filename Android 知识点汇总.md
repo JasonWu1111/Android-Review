@@ -708,6 +708,65 @@ public class MyApplication extends Application {
 - JobSheduler唤醒
 - 粘性服务&与系统服务捆绑
 
+# Parcelable 接口
+只要实现了 Parcelable 接口，一个类的对象就可以实现序列化并可以通过 Intent 和 Binder 传递。
+
+## 使用示例
+```java
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
+    
+    private int userId;
+
+    protected User(Parcel in) {
+        userId = in.readInt();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(userId);
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+}
+```
+
+## 方法说明
+Parcel 内部包装了可序列化的数据，可以在 Binder 中自由传输。序列化功能由 ``writeToParcel`` 方法完成，最终是通过 Parcel 中的一系列 write 方法完成。反序列化功能由 CREATOR 来完成，通过 Parcel 的一系列 read 方法来完成反序列化过程。
+
+| 方法 | 功能
+|--|--
+| createFromParcel(Parcel in) | 从序列化后的对象中创建原始对象
+| newArray(int size) | 创建指定长度的原始对象数组
+| User(Parcel in) | 从序列化后的对象中创建原始对象
+| writeToParcel(Parcel dest, int flags) | 将当前对象写入序列化结构中，其中 flags 标识有两种值：0 或者 1。为 1 时标识当前对象需要作为返回值返回，不能立即释放资源，几乎所有情况都为 0
+| describeContents | 返回当前对象的内容描述。如果含有文件描述符，返回 1，否则返回 0，几乎所有情况都返回 0 |
+
+## Parcelable 与 Serializable 对比
+- Serializable 使用 I/O 读写存储在硬盘上，而 Parcelable 是直接 在内存中读写
+- Serializable 会使用反射，序列化和反序列化过程需要大量 I/O 操作， Parcelable 自已实现封送和解封（marshalled &unmarshalled）操作不需要用反射，数据也存放在 Native 内存中，效率要快很多
+
 # IPC
 IPC 即 Inter-Process Communication (进程间通信)。Android 基于 Linux，而 Linux 出于安全考虑，不同进程间不能之间操作对方的数据，这叫做“进程隔离”。
 > 在 Linux 系统中，虚拟内存机制为每个进程分配了线性连续的内存空间，操作系统将这种虚拟内存空间映射到物理内存空间，每个进程有自己的虚拟内存空间，进而不能操作其他进程的内存空间，只有操作系统才有权限操作物理内存空间。 进程隔离保证了每个进程的内存安全。
@@ -722,9 +781,139 @@ IPC 即 Inter-Process Communication (进程间通信)。Android 基于 Linux，�
 | ContentProvider | 在数据源访问方面功能强大，支持一对多并发数据共享，可通过Call方法扩展其他操作|可以理解为受约束的AIDL，主要提供数据源的CRUD操作 | 一对多的进程间数据共享
 | Socket | 功能请打，可以通过网络传输字节流，支持一对多并发实时通信 | 实现细节稍微有点烦琐，不支持直接的RPC | 网络数据交换
 
-## AIDL
+## Binder
+Binder 是 Android 中的一个类，实现了 IBinder 接口。从 IPC 角度来说，Binder 是 Android 中的一种扩进程通信方方式。从 Android 应用层来说，Binder 是客户端和服务器端进行通信的媒介，当 bindService 的时候，服务端会返回一个包含了服务端业务调用的 Binder 对象。
+
+- **新建AIDL接口文件**
+  
+``RemoteService.aidl``
+```java
+package com.example.mystudyapplication3;
+
+interface IRemoteService {
+
+    int getUserId();
+
+}
+```
+
+系统会自动生成 ``IRemoteService.java``:
+
+```java
+/*
+ * This file is auto-generated.  DO NOT MODIFY.
+ */
+package com.example.mystudyapplication3;
+// Declare any non-default types here with import statements
+//import com.example.mystudyapplication3.IUserBean;
+
+public interface IRemoteService extends android.os.IInterface {
+    /**
+     * Local-side IPC implementation stub class.
+     */
+    public static abstract class Stub extends android.os.Binder implements com.example.mystudyapplication3.IRemoteService {
+        private static final java.lang.String DESCRIPTOR = "com.example.mystudyapplication3.IRemoteService";
+
+        /**
+         * Construct the stub at attach it to the interface.
+         */
+        public Stub() {
+            this.attachInterface(this, DESCRIPTOR);
+        }
+
+        /**
+         * Cast an IBinder object into an com.example.mystudyapplication3.IRemoteService interface,
+         * generating a proxy if needed.
+         */
+        public static com.example.mystudyapplication3.IRemoteService asInterface(android.os.IBinder obj) {
+            if ((obj == null)) {
+                return null;
+            }
+            android.os.IInterface iin = obj.queryLocalInterface(DESCRIPTOR);
+            if (((iin != null) && (iin instanceof com.example.mystudyapplication3.IRemoteService))) {
+                return ((com.example.mystudyapplication3.IRemoteService) iin);
+            }
+            return new com.example.mystudyapplication3.IRemoteService.Stub.Proxy(obj);
+        }
+
+        @Override
+        public android.os.IBinder asBinder() {
+            return this;
+        }
+
+        @Override
+        public boolean onTransact(int code, android.os.Parcel data, android.os.Parcel reply, int flags) throws android.os.RemoteException {
+            java.lang.String descriptor = DESCRIPTOR;
+            switch (code) {
+                case INTERFACE_TRANSACTION: {
+                    reply.writeString(descriptor);
+                    return true;
+                }
+                case TRANSACTION_getUserId: {
+                    data.enforceInterface(descriptor);
+                    int _result = this.getUserId();
+                    reply.writeNoException();
+                    reply.writeInt(_result);
+                    return true;
+                }
+                default: {
+                    return super.onTransact(code, data, reply, flags);
+                }
+            }
+        }
+
+        private static class Proxy implements com.example.mystudyapplication3.IRemoteService {
+            private android.os.IBinder mRemote;
+
+            Proxy(android.os.IBinder remote) {
+                mRemote = remote;
+            }
+
+            @Override
+            public android.os.IBinder asBinder() {
+                return mRemote;
+            }
+
+            public java.lang.String getInterfaceDescriptor() {
+                return DESCRIPTOR;
+            }
+
+            @Override
+            public int getUserId() throws android.os.RemoteException {
+                android.os.Parcel _data = android.os.Parcel.obtain();
+                android.os.Parcel _reply = android.os.Parcel.obtain();
+                int _result;
+                try {
+                    _data.writeInterfaceToken(DESCRIPTOR);
+                    mRemote.transact(Stub.TRANSACTION_getUserId, _data, _reply, 0);
+                    _reply.readException();
+                    _result = _reply.readInt();
+                } finally {
+                    _reply.recycle();
+                    _data.recycle();
+                }
+                return _result;
+            }
+        }
+
+        static final int TRANSACTION_getUserId = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
+    }
+
+    public int getUserId() throws android.os.RemoteException;
+}
+```
+
+| 方法 | 含义
+|--|--
+| DESCRIPTOR | Binder 的唯一标识，一般用当前的 Binder 的类名表示
+| asInterface(IBinder obj) | 将服务端的 Binder 对象成客户端所需的 AIDL 接口类型对象，这种转换过程是区分进程的，如果位于同一进程，返回的就是 Stub 对象本身，否则返回的是系统封装后的 Stub.proxy 对象。
+| asBinder | 用于返回当前 Binder 对象
+| onTransact | 运行在服务端中的 Binder 线程池中，远程请求会通过系统底层封装后交由此方法来处理
+
+## AIDL 通信
 Android Interface Definition Language
 
+使用示例：
 - **新建AIDL接口文件**
 ```java
 // RemoteService.aidl
@@ -974,10 +1163,6 @@ if(bitmap != null && !bitmap.isRecycled()){
 } 
 ```
 Bitmap类的构造方法都是私有的，所以开发者不能直接new出一个Bitmap对象，只能通过BitmapFactory类的各种静态方法来实例化一个Bitmap。仔细查看BitmapFactory的源代码可以看到，生成Bitmap对象最终都是通过JNI调用方式实现的。所以，加载Bitmap到内存里以后，是包含两部分内存区域的。简单的说，一部分是Java部分的，一部分是C部分的。这个Bitmap对象是由Java部分分配的，不用的时候系统就会自动回收了，但是那个对应的C可用的内存区域，虚拟机是不能直接回收的，这个只能调用底层的功能释放。所以需要调用recycle()方法来释放C部分的内存。从Bitmap类的源代码也可以看到，recycle()方法里也的确是调用了JNI方法了的。
-
-# Serializable/Parcelable
-- Serializable 使用 I/O 读写存储在硬盘上，而 Parcelable 是直接 在内存中读写
-- Serializable 会使用反射，序列化和反序列化过程需要大量 I/O 操作， Parcelable 自已实现封送和解封（marshalled &unmarshalled）操作不需要用反射，数据也存放在 Native 内存中，效率要快很多
 
 # 屏幕适配
 ## 单位
