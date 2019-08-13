@@ -1065,3 +1065,143 @@ target_link_libraries( # Specifies the target library.
 | 24 | 原生相机 API | #include <camera/NdkCameraCaptureSession.h><br>#include <camera/NdkCameraDevice.h><br>···
 | ···
 
+# 计算机网络基础
+## 网络体系的分层结构
+| 分层 | 说明
+| -- | --
+| 应用层（HTTP、FTP、DNS、SMTP 等）| 定义了如何包装和解析数据，应用层是 http 协议的话，则会按照协议规定包装数据，如按照请求行、请求头、请求体包装，包装好数据后将数据传至运输层
+| 运输层（TCP、UDP 等） | 运输层有 TCP 和 UDP 两种，分别对应可靠和不可靠的运输。在这一层，一般都是和Socket 打交道，Socket是一组封装的编程调用接口，通过它，我们就能操作TCP、UDP进行连接的建立等。这一层指定了把数据送到对应的端口号
+| 网络层（IP 等） | 这一层IP协议，以及一些路由选择协议等等，所以这一层的指定了数据要传输到哪个IP地址。中间涉及到一些最优线路，路由选择算法等
+| 数据链路层（ARP）| 负责把 IP 地址解析为 MAC 地址，即硬件地址，这样就找到了对应的唯一的机器
+| 物理层 | 提供二进制流传输服务，也就是真正开始通过传输介质（有线、无线）开始进行数据的传输
+
+## Http 相关
+### 请求报文与响应报文
+- 请求报文
+  
+| 名称 | 组成
+| -- | --
+| 请求行 | 请求方法如 post/get、请求路径 url、协议版本等
+| 请求头 | 即 header，里面包含了很多字段
+| 请求体 | 发送的数据
+
+- 响应报文
+
+| 名称 | 组成
+| -- | --
+| 状态行 | 状态码如 200、协议版本等
+| 响应头 | 即返回的 header
+| 响应体 | 响应的正文数据 |
+
+### 缓存机制
+![](https://upload-images.jianshu.io/upload_images/1445840-c3465ef477e24416.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/930/format/webp)
+
+- Cache-control 主要包含以下几个字段：
+
+| 字段 | 说明
+| -- | --
+| private | 只有客户端可以缓存
+| public | 客户端和代理服务器都可以缓存
+| max-age | 缓存的过期时间
+| no-cache | 需要使用对比缓存来验证缓存数据，如果服务端确认资源没有更新，则返回304，取本地缓存即可，如果有更新，则返回最新的资源。做对比缓存与 Etag 有关。
+| no-store | 这个字段打开，则不会进行缓存，也不会取缓存
+
+- Etag：当客户端发送第一次请求时服务端会下发当前请求资源的标识码 Etag ，下次再请求时，客户端则会通过header 里的 If-None-Match 将这个标识码 Etag 带上，服务端将客户端传来的 Etag 与最新的资源 Etag 做对比，如果一样，则表示资源没有更新，返回304。
+
+### Https
+Https 保证了我们数据传输的安全，Https = Http + Ssl，之所以能保证安全主要的原理就是利用了非对称加密算法，平常用的对称加密算法之所以不安全，是因为双方是用统一的密匙进行加密解密的，只要双方任意一方泄漏了密匙，那么其他人就可以利用密匙解密数据。
+
+### Http 2.0
+Okhttp 支持配置使用 Http 2.0 协议，Http2.0 相对于 Http1.x 来说提升是巨大的，主要有以下几点：
+- **二进制格式**：http1.x 是文本协议，而 http2.0 是二进制以帧为基本单位，是一个二进制协议，一帧中除了包含数据外同时还包含该帧的标识：Stream Identifier，即标识了该帧属于哪个request,使得网络传输变得十分灵活。
+- **多路复用**：多个请求共用一个TCP连接，多个请求可以同时在这个TCP连接上并发，一个是解决了建立多个TCP连接的消耗问题，一个也解决了效率的问题。
+- **header 压缩**：主要是通过压缩 header 来减少请求的大小，减少流量消耗，提高效率。
+- **支持服务端推送**
+
+## TCP/IP
+IP（Internet Protocol）协议提供了主机和主机间的通信，为了完成不同主机的通信，我们需要某种方式来唯一标识一台主机，这个标识，就是著名的 IP 地址。通过IP地址，IP 协议就能够帮我们把一个数据包发送给对方。
+
+TCP 的全称是 Transmission Control Protocol，TCP 协议在 IP 协议提供的主机间通信功能的基础上，完成这两个主机上进程对进程的通信，通信双方需要先经过一个**三次握手**过程：
+
+![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3WyBBhtrBTSq6HiacQjdDkhnn18dMxN6FlgzJUPG38vzgcHmWHIPBOE2LYSVw9En5beP8W5HQ68BdzQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+- 首先，客户向服务端发送一个 SYN，假设此时 sequence number 为 x。这个 x 是由操作系统根据一定的规则生成的，不妨认为它是一个随机数。
+
+- 服务端收到 SYN 后，会向客户端再发送一个 SYN，此时服务器的 seq number = y。与此同时，会 ACK x+1，告诉客户端“已经收到了 SYN，可以发送数据了”。
+
+- 客户端收到服务器的 SYN 后，回复一个 ACK y+1，这个 ACK 则是告诉服务器，SYN 已经收到，服务器可以发送数据了。
+
+### TCP 与 UDP 的区别
+| 区别点    | TCP      | UDP    |
+| -------- | -------- | ------ |
+| 连接性   | 面向连接 | 无连接 |
+| 可靠性   | 可靠     | 不可靠|
+| 有序性   | 有序     | 无序   |
+| 面向     | 字节流     | 报文（保留报文的边界） |
+| 有界性   | 有界     | 无界   |
+| 流量控制 | 有（滑动窗口） | 无     |
+| 拥塞控制 | 有（慢开始、拥塞避免、快重传、快恢复）       | 无 |
+| 传输速度 | 慢       | 快     |
+| 量级     | 重量级   | 轻量级 |
+| 双工性     | 全双工   | 一对一、一对多、多对一、多对多 |
+| 头部 | 大（20-60 字节）       | 小（8 字节）     |
+| 应用 | 文件传输、邮件传输、浏览器等 | 即时通讯、视频通话等     |
+
+## Socket
+Socket 是一组操作 TCP/UDP 的 API，像 HttpURLConnection 和 Okhttp 这种涉及到比较底层的网络请求发送的，最终当然也都是通过 Socket 来进行网络请求连接发送，而像 Volley、Retrofit 则是更上层的封装。
+
+### 使用示例
+使用 socket 的步骤如下：
+- 创建 ServerSocket 并监听客户连接；
+- 使用 Socket 连接服务端；
+- 通过 Socket.getInputStream()/getOutputStream() 获取输入输出流进行通信。
+
+```java
+public class EchoClient {
+ 
+    private final Socket mSocket;
+ 
+    public EchoClient(String host, int port) throws IOException {
+        // 创建 socket 并连接服务器
+        mSocket = new Socket(host, port);
+    }
+ 
+    public void run() {
+        // 和服务端进行通信
+        Thread readerThread = new Thread(this::readResponse);
+        readerThread.start();
+ 
+        OutputStream out = mSocket.getOutputStream();
+        byte[] buffer = new byte[1024];
+        int n;
+        while ((n = System.in.read(buffer)) > 0) {
+            out.write(buffer, 0, n);
+        }
+    }
+
+    private void readResponse() {
+        try {
+            InputStream in = mSocket.getInputStream();
+            byte[] buffer = new byte[1024];
+            int n;
+            while ((n = in.read(buffer)) > 0) {
+                System.out.write(buffer, 0, n);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+ 
+ 
+    public static void main(String[] argv) {
+        try {
+            // 由于服务端运行在同一主机，这里我们使用 localhost
+            EchoClient client = new EchoClient("localhost", 9877);
+            client.run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
