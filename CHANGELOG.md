@@ -1,4 +1,7 @@
 # Change Log
+## 更新至 2019-08-13
+- 新增 [NDK 开发](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#ndk-%E5%BC%80%E5%8F%91)
+
 ## 更新至 2019-08-12
 - 新增 [Parcelable 接口](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#parcelable-%E6%8E%A5%E5%8F%A3) 
 - 新增 [Binder](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#binder) 
