@@ -114,8 +114,6 @@
       * [架构](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#架构)
       * [apply / commit](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#apply--commit)
       * [注意](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#注意)
-   * [NDK](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#ndk)
-      * [用途](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#用途)
    * [消息机制](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#消息机制)
       * [Handler机制](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#handler机制)
       * [工作原理](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#工作原理)
@@ -176,6 +174,14 @@
       * [原型模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#原型模式)
       * [适配器模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#适配器模式)
       * [观察者模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#观察者模式)
+   * [NDK 开发](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#ndk-开发)
+      * [JNI 基础](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#jni-基础)
+         * [数据类型](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#数据类型)
+         * [String 字符串函数操作](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#string-字符串函数操作)
+         * [常用 JNI 访问 Java 对象方法](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#常用-jni-访问-java-对象方法)
+      * [NDK 开发流程](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#ndk-开发流程)
+      * [CMake 构建 NDK 项目](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#cmake-构建-ndk-项目)
+      * [常用的 Android NDK 原生 API](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#常用的-android-ndk-原生-api)
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
