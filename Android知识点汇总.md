@@ -1337,15 +1337,6 @@ SharedPreferences与Editor只是两个接口. SharedPreferencesImpl和EditorImpl
 - 高频写操作的key与高频读操作的key可以适当地拆分文件，由于减少同步锁竞争
 - 不要连续多次edit()，应该获取一次获取edit()，然后多次执行putxxx()，减少内存波动
 
-# NDK
-NDK 全称是 Native Development Kit，是一组可以在 Android 应用中编写实现 C/C++ 的工具，可以在项目用自己写源代码构建，也可以利用现有的预构建库。
-
-## 用途
-- 从设备获取更好的性能以用于计算密集型应用，例如游戏或物理模拟  
-- 重复使用自己或其他开发者的 C/C++ 库，便利于跨平台。  
-- NDK 集成了譬如 OpenSL、Vulkan 等 API 规范的特定实现，以实现在 java 层无法做到的功能如提升音频性能等  
-- 增加反编译难度
-
 # 消息机制
 ## Handler机制
 Handler有两个主要用途：（1）安排Message和runnables在将来的某个时刻执行; （2）将要在不同于自己的线程上执行的操作排入队列。(在多个线程并发更新UI的同时保证线程安全。)
