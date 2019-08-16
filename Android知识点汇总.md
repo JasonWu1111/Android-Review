@@ -989,12 +989,12 @@ public class MainActivity extends AppCompatActivity {
 ## Messenger
 Messenger可以在不同进程中传递Message对象，在Message中放入我们需要传递的数据，就可以轻松地实现数据的进程间传递了。Messenger是一种轻量级的IPC方案，底层实现是AIDL。
 
-# Window/WindowManager
+# Window / WindowManager
 ## Window 概念与分类
 Window 是一个抽象类，它的具体实现是 PhoneWindow。WindowManager 是外界访问 Window 的入口，Window 的具体实现位于 WindowManagerService 中，WindowManager 和 WindowManagerService 的交互是一个 IPC 过程。Android 中所有的视图都是通过 Window 来呈现，因此 Window 实际是 View 的直接管理者。
 
 | Window 类型 | 说明 | 层级
-|--|--
+|--|--|--
 | Application Window | 对应着一个 Activity | 1~99
 | Sub Window | 不能单独存在，只能附属在父 Window 中，如 Dialog 等 | 1000~1999
 | System Window | 需要权限声明，如 Toast 和 系统状态栏等 | 2000~2999
