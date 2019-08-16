@@ -52,7 +52,7 @@ ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回
 ## Apk 组成结构
 | 文件/文件夹 | 作用/功能
 |--|--
-| res | 包含所有没有被编译到.arsc里面的资源文件
+| res | 包含所有没有被编译到 .arsc 里面的资源文件
 | lib | 引用库的文件夹
 | assets | assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等,通过AssetManager访问
 | META_INF | 存放的是签名信息，用来保证apk包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
@@ -63,17 +63,17 @@ ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回
 ## 整体优化
 - 分离应用的独立模块，以插件的形式加载
 - 解压APK，重新用 7zip 进行压缩
-- 用 apksigner 签名工具 替代 java提供的jarsigner签名工具
+- 用 apksigner 签名工具 替代 java 提供的 jarsigner 签名工具
 
 ## 资源优化 
-- 可以只用一套资源图片，一般采用xhdpi下的资源图片
+- 可以只用一套资源图片，一般采用 xhdpi 下的资源图片
 - 通过扫描文件的MD5值，找出名字不同，内容相同的图片并删除
 - 通过 Lint 工具扫描工程资源，移除无用资源
 - 通过 Gradle 参数配置 shrinkResources=true
 - 对 png 图片压缩
 - 图片资源考虑采用 WebP 格式
 - 避免使用帧动画，可使用 Lottie 动画库
-- 优先考虑能否用 shape 代码、.9图、svg矢量图、VectorDrawable类来替换传统的图片
+- 优先考虑能否用 shape 代码、.9 图、svg 矢量图、VectorDrawable 类来替换传统的图片
 
 ## 代码优化
 - 启用混淆以移除无用代码
@@ -81,7 +81,7 @@ ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回
 - 用注解替代枚举
 
 ## .arsc文件优化 
-- 移除未使用的备用资源来优化.arsc文件
+- 移除未使用的备用资源来优化 .arsc 文件
 ```groovy
 android {
     defaultConfig {
@@ -106,9 +106,9 @@ android {
 
 # Hook
 ## 基本流程
-1、根据需求确定 要hook的对象  
-2、寻找要hook的对象的持有者，拿到要hook的对象  
-3、定义“要hook的对象”的代理类，并且创建该类的对象  
+1、根据需求确定 要 hook 的对象  
+2、寻找要hook的对象的持有者，拿到要 hook 的对象  
+3、定义“要 hook 的对象”的代理类，并且创建该类的对象  
 4、使用上一步创建出来的对象，替换掉要hook的对象
 
 ## 使用示例
@@ -372,7 +372,7 @@ android {
 ```
 
 ## 检查混淆和追踪异常
-开启Proguard功能，则每次构建时 ProGuard 都会输出下列文件：
+开启 Proguard 功能，则每次构建时 ProGuard 都会输出下列文件：
 
 - dump.txt  
 说明 APK 中所有类文件的内部结构。
@@ -386,7 +386,7 @@ android {
 - usage.txt  
 列出从 APK 移除的代码。
 
-这些文件保存在/build/outputs/mapping/release/ 中。我们可以查看seeds.txt里面是否是我们需要保留的，以及usage.txt里查看是否有误删除的代码。mapping.txt文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于/tools/proguard/ 目录中。该脚本利用 mapping.txt文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
+这些文件保存在 /build/outputs/mapping/release/ 中。我们可以查看seeds.txt里面是否是我们需要保留的，以及 usage.txt 里查看是否有误删除的代码。 mapping.txt 文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现 bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于/tools/proguard/ 目录中。该脚本利用 mapping.txt 文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
 
 ```shell
 retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
