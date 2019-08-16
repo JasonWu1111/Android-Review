@@ -96,7 +96,6 @@
          * [Activity 的 Window 创建过程](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#activity-的-window-创建过程)
          * [Dialog 的 Window 创建过程](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#dialog-的-window-创建过程)
          * [Toast 的 Window 创建过程](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#toast-的-window-创建过程)
-
    * [Bitmap](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#bitmap)
       * [配置信息与压缩方式](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#配置信息与压缩方式)
       * [常用操作](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#常用操作)
