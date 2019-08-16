@@ -1,6 +1,6 @@
 # Change Log
 ## 更新至 2019-08-16
-- 新增 [[Window / WindowManager](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#window--windowmanager)
+- 新增 [Window / WindowManager](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#window--windowmanager)
 
 ## 更新至 2019-08-13
 - 新增 [计算机网络基础](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80)
