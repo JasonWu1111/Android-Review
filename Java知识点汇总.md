@@ -306,8 +306,8 @@ public class CustomManager{
 # 线程
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4a48de8f9?w=700&h=480&f=jpeg&s=103460)
 
-# valatile
-当把变量声明为 volatile 类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步，因此在读取volatile类型的变量时总会返回最新写入的值。
+# volatile
+当把变量声明为 volatile 类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile 变量不会被缓存在寄存器或者对其他处理器不可见的地方，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步，因此在读取 volatile 类型的变量时总会返回最新写入的值。
 
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4a48b216e?w=550&h=429&f=png&s=21448)
 
