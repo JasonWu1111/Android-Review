@@ -31,7 +31,7 @@
       * [双重检查模式](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#双重检查模式)
       * [静态内部类模式](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#静态内部类模式)
    * [线程](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#线程)
-   * [valatile](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#valatile)
+   * [volatile](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#volatile)
    * [HashMap](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#hashmap)
       * [HashMap的工作原理](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#hashmap的工作原理)
    * [synchronized](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#synchronized)
