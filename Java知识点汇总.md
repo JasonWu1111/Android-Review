@@ -24,8 +24,8 @@
 ## 类加载器
 | 类加载器 | 说明                      
 |----------|-----|
-| BootstrapClassLoader | Bootstrap 类加载器负责加载rt.jar中的JDK类文件，它是所有类加载器的父加载器。Bootstrap 类加载器没有任何父类加载器，如果你调用 String.class.getClassLoader()，会返回 null，任何基于此的代码会抛出 NUllPointerException 异常。Bootstrap 加载器被称为初始类加载器 |
-| ExtClasssLoader | 而 Extension 将加载类的请求先委托给它的父加载器，也就是Bootstrap，如果没有成功加载的话，再从jre/lib/ext目录下或者java.ext.dirs 系统属性定义的目录下加载类。Extension 加载器由 sun.misc.Launcher$ExtClassLoader 实现 |
+| BootstrapClassLoader | Bootstrap 类加载器负责加载 rt.jar 中的 JDK 类文件，它是所有类加载器的父加载器。Bootstrap 类加载器没有任何父类加载器，如果你调用 String.class.getClassLoader()，会返回 null，任何基于此的代码会抛出 NUllPointerException 异常。Bootstrap 加载器被称为初始类加载器 |
+| ExtClassLoader | 而 Extension 将加载类的请求先委托给它的父加载器，也就是Bootstrap，如果没有成功加载的话，再从 jre/lib/ext 目录下或者 java.ext.dirs 系统属性定义的目录下加载类。Extension 加载器由 sun.misc.Launcher$ExtClassLoader 实现 |
 | AppClassLoader | 第三种默认的加载器就是 System 类加载器（又叫作 Application 类加载器）了。它负责从 classpath 环境变量中加载某些应用相关的类，classpath 环境变量通常由 -classpath 或 -cp 命令行选项来定义，或者是 JAR 中的 Manifest 的 classpath 属性。Application 类加载器是 Extension 类加载器的子加载器 |
 &nbsp;
 | 工作原理 | 说明                      
@@ -42,13 +42,13 @@
 
 - **可达性分析**
 
-从GC Roots开始向下搜索，搜索所走过的路径称为引用链。当一个对象到 GC Roots 没有任何引用链相连时，则证明此对象是不可用的。不可达对象。
+从 GC Roots 开始向下搜索，搜索所走过的路径称为引用链。当一个对象到 GC Roots 没有任何引用链相连时，则证明此对象是不可用的。不可达对象。
 
 > 在Java语言中，GC Roots包括：
 > - 虚拟机栈中引用的对象。
 > - 方法区中类静态属性实体引用的对象。
 > - 方法区中常量引用的对象。
-> - 本地方法栈中JNI引用的对象。
+> - 本地方法栈中 JNI 引用的对象。
 
 ### 垃圾收集算法
 - **标记 -清除算法**
@@ -63,15 +63,15 @@
 
 这样使得每次都是对其中的一块进行内存回收，内存分配时也就不用考虑内存碎片等复杂情况，只要移动堆顶指针，按顺序分配内存即可，实现简单，运行高效。只是这种算法的代价是将内存缩小为原来的一半，持续复制长生存期的对象则导致效率降低。
 
-- **标记-压缩算法**
+- **标记-整理算法**
   
 复制收集算法在对象存活率较高时就要执行较多的复制操作，效率将会变低。更关键的是，如果不想浪费50%的空间，就需要有额外的空间进行分配担保，以应对被使用的内存中所有对象都100%存活的极端情况，所以在老年代一般不能直接选用这种算法。
 
-根据老年代的特点，有人提出了另外一种“标记-整理”（Mark-Compact）算法，标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存
+根据老年代的特点，有人提出了另外一种“标记-整理”（Mark-Compact）算法，标记过程仍然与“标记-清除”算法一样，但后续步骤不是直接对可回收对象进行清理，而是让所有存活的对象都向一端移动，然后直接清理掉端边界以外的内存。
 
 - **分代收集算法**
 
-GC分代的基本假设：绝大部分对象的生命周期都非常短暂，存活时间短。
+GC 分代的基本假设：绝大部分对象的生命周期都非常短暂，存活时间短。
 
 “分代收集”（Generational Collection）算法，把Java堆分为新生代和老年代，这样就可以根据各个年代的特点采用最适当的收集算法。在新生代中，每次垃圾收集时都发现有大批对象死去，只有少量存活，那就选用复制算法，只需要付出少量存活对象的复制成本就可以完成收集。而老年代中因为对象存活率高、没有额外空间对它进行分配担保，就必须使用“标记-清理”或“标记-整理”算法来进行回收。
 
@@ -102,6 +102,25 @@ GC分代的基本假设：绝大部分对象的生命周期都非常短暂，存
 使用G1收集器时，Java堆的内存布局与其他收集器有很大差别，它将整个Java堆划分为多个大小相等的独立区域（Region），虽然还保留有新生代和老年代的概念，但新生代和老年代不再是物理隔阂了，它们都是一部分（可以不连续）Region 的集合。
 
 G1的新生代收集跟 ParNew 类似，当新生代占用达到一定比例的时候，开始出发收集。和 CMS 类似，G1 收集器收集老年代对象会有短暂停顿。
+
+### 内存模型与回收策略
+![](https://mmbiz.qpic.cn/mmbiz_png/qdzZBE73hWsbhfAng9ibqfcbjrqgyRWqAKiaJ2U75SGYwQhs2tuNbXtu8KIpaUsBOaHRKXf7esuuFoMjELFxibIVg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+
+Java 堆（Java Heap）是JVM所管理的内存中最大的一块，堆又是垃圾收集器管理的主要区域，Java 堆主要分为2个区域-年轻代与老年代，其中年轻代又分 Eden 区和 Survivor 区，其中 Survivor 区又分 From 和 To 2个区。
+
+- **Eden 区**
+  
+大多数情况下，对象会在新生代 Eden 区中进行分配，当 Eden 区没有足够空间进行分配时，虚拟机会发起一次 Minor GC，Minor GC 相比 Major GC 更频繁，回收速度也更快。
+通过 Minor GC 之后，Eden 会被清空，Eden 区中绝大部分对象会被回收，而那些无需回收的存活对象，将会进到 Survivor 的 From 区（若 From 区不够，则直接进入 Old 区）。
+
+- **Survivor 区**
+
+Survivor 区相当于是 Eden 区和 Old 区的一个缓冲，类似于我们交通灯中的黄灯。Survivor 又分为2个区，一个是 From 区，一个是 To 区。每次执行 Minor GC，会将 Eden 区和 From 存活的对象放到 Survivor 的 To 区（如果 To 区不够，则直接进入 Old 区）。Survivor 的存在意义就是减少被送到老年代的对象，进而减少 Major GC 的发生。Survivor 的预筛选保证，只有经历16次 Minor GC 还能在新生代中存活的对象，才会被送到老年代。
+
+- **Old 区**
+  
+老年代占据着2/3的堆内存空间，只有在 Major GC 的时候才会进行清理，每次 GC 都会触发“Stop-The-World”。内存越大，STW 的时间也越长，所以内存也不仅仅是越大就越好。由于复制算法在对象存活率较高的老年代会进行很多次的复制操作，效率很低，所以老年代这里采用的是标记——整理算法。
+
 
 # Object
 ## equals 方法
@@ -147,7 +166,7 @@ public int hashCode() {
 
 # final
 - 可以声明成员变量、方法、类以及本地变量
-- final成员变量必须在声明的时候初始化或者在构造器中初始化，否则就会报编译错误
+- final 成员变量必须在声明的时候初始化或者在构造器中初始化，否则就会报编译错误
 - final 变量是只读的
 - final 申明的方法不可以被子类的方法重写
 - final 类通常功能是完整的，不能被继承
@@ -156,7 +175,7 @@ public int hashCode() {
 - 方法的内部类访问方法中的局部变量，但必须用 final 修饰才能访问
 
 # String、StringBuffer、StringBuilder
-- String是 final 类，不能被继承。对于已经存在的 Stirng 对象，修改它的值，就是重新创建一个对象
+- String 是 final 类，不能被继承。对于已经存在的 Stirng 对象，修改它的值，就是重新创建一个对象
 - StringBuffer 是一个类似于 String 的字符串缓冲区，使用 append() 方法修改 Stringbuffer 的值，使用 toString() 方法转换为字符串，是线程安全的
 - StringBuilder 用来替代于 StringBuffer，StringBuilder 是非线程安全的，速度更快
 
@@ -192,7 +211,7 @@ public int hashCode() {
 - 如果我们在子类中编写一个独有的方法，此时就不能通过父类的引用创建的子类对象来调用该方法
 
 # 抽象和接口
-- 抽象类不能有对象（不能用new此关键字来创建抽象类的对象）
+- 抽象类不能有对象（不能用 new 关键字来创建抽象类的对象）
 - 抽象类中的抽象方法必须在子类中被重写
 - 接口中的所有属性默认为：public static final ****；
 - 接口中的所有方法默认为：public abstract ****；
@@ -306,6 +325,8 @@ public class CustomManager{
 # 线程
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4a48de8f9?w=700&h=480&f=jpeg&s=103460)
 
+- 
+
 # volatile
 当把变量声明为 volatile 类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile 变量不会被缓存在寄存器或者对其他处理器不可见的地方，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步，因此在读取 volatile 类型的变量时总会返回最新写入的值。
 
@@ -316,7 +337,7 @@ public class CustomManager{
 - 禁止指令重排序优化
 - volatile 的读性能消耗与普通变量几乎相同，但是写操作稍慢，因为它需要在本地代码中插入许多内存屏障指令来保证处理器不发生乱序执行
 
-AtomicInteger 中主要实现了整型的原子操作，防止并发情况下出现异常结果，其内部主要依靠 JDK 中的 unsafe 类操作内存中的数据来实现的。volatile 修饰符保证了value在内存中其他线程可以看到其值得改变。CAS操作保证了AtomicInteger 可以安全的修改value 的值。
+AtomicInteger 中主要实现了整型的原子操作，防止并发情况下出现异常结果，其内部主要依靠 JDK 中的 unsafe 类操作内存中的数据来实现的。volatile 修饰符保证了 value 在内存中其他线程可以看到其值得改变。CAS（Compare and Swap）操作保证了 AtomicInteger 可以安全的修改value 的值。
 
 # HashMap
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4ac8f44fd?w=1636&h=742&f=png&s=88323)
@@ -334,7 +355,7 @@ HashMap 基于 hashing 原理，我们通过 put() 和 get() 方法储存和获�
 
 在 Java 中，每个对象都会有一个 monitor 对象，这个对象其实就是 Java 对象的锁，通常会被称为“内置锁”或“对象锁”。类的对象可以有多个，所以每个对象有其独立的对象锁，互不干扰。针对每个类也有一个锁，可以称为“类锁”，类锁实际上是通过对象锁实现的，即类的 Class 对象锁。每个类只有一个 Class 对象，所以每个类只有一个类锁。
 
-Monitor 是线程私有的数据结构，每一个线程都有一个可用 monitor record 列表，同时还有一个全局的可用列表。每一个被锁住的对象都会和一个 monitor 关联，同时 monitor 中有一个 Owne r字段存放拥有该锁的线程的唯一标识，表示该锁被这个线程占用。Monitor 是依赖于底层的操作系统的 Mutex Lock（互斥锁）来实现的线程同步。
+Monitor 是线程私有的数据结构，每一个线程都有一个可用 monitor record 列表，同时还有一个全局的可用列表。每一个被锁住的对象都会和一个 monitor 关联，同时 monitor 中有一个 Owner 字段存放拥有该锁的线程的唯一标识，表示该锁被这个线程占用。Monitor 是依赖于底层的操作系统的 Mutex Lock（互斥锁）来实现的线程同步。
 
 ## 根据获取的锁分类
 **获取对象锁**
