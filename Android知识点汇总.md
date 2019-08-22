@@ -317,6 +317,11 @@ public class Installer extends ContentProvider {
     }
 }
 ```
+
+> ContentProvider 和 sql 在实现上有什么区别?
+>- ContentProvider 屏蔽了数据存储的细节，内部实现透明化，用户只需关心 uri 即可(是否匹配)
+>- ContentProvider 能实现不同 app 的数据共享，sql 只能是自己程序才能访问
+>- Contentprovider 还能增删本地的文件,xml等信息
  
 # 数据存储
 | 存储方式 | 说明 |
@@ -520,7 +525,7 @@ view.requestLayout();
 
 - View 在可点击状态下，onTouchEvent 默认会消耗事件。
 
-- ACTION_DOWN 被拦截了，onInterceptTouchEvent 方法执行一次后，就会留下记号（mFirstTouchTarget == null）那么往后的 ACTION_MOVE 和 ACTION_UP 都会拦截。
+- ACTION_DOWN 被拦截了，onInterceptTouchEvent 方法执行一次后，就会留下记号（mFirstTouchTarget == null）那么往后的 ACTION_MOVE 和 ACTION_UP 都会拦截。`
 
 
 ## 在Activity中获取某个View的宽高

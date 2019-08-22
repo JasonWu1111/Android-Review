@@ -974,11 +974,11 @@ Java_com_example_myjniproject_MainActivity_stringFromJNI(
 }
 ```
 
-- 函数名的格式遵循遵循如下规则：Java_包名_类名_方法名。
-- extern "C" 指定采用 C 语言的命名风格来编译，否则由于 C 与 C++ 风格不同，导致链接时无法找到具体的函数
-- JNIEnv*：表示一个指向 JNI 环境的指针，可以通过他来访问 JNI 提供的接口方法
-- jobject：表示 java 对象中的 this
-- JNIEXPORT 和 JNICALL：
+>- 函数名的格式遵循遵循如下规则：Java_包名_类名_方法名。
+>- extern "C" 指定采用 C 语言的命名风格来编译，否则由于 C 与 C++ 风格不同，导致链接时无法找到具体的函数
+>- JNIEnv*：表示一个指向 JNI 环境的指针，可以通过他来访问 JNI 提供的接口方法
+>- jobject：表示 java 对象中的 this
+>- JNIEXPORT 和 JNICALL：
 
 - 通过 CMake 或者 ndk-build 构建动态库
 
