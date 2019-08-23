@@ -1,4 +1,12 @@
 # Change Log
+## 更新至 2019-08-23
+- 更新 [Content Provider](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#contentprovider)
+- 更新 [线程 状态](https://github.com/JasonWu1111/Android-Review/blob/master/Java%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E7%8A%B6%E6%80%81)
+- 更新 [Lock](https://github.com/JasonWu1111/Android-Review/blob/master/Java%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#lock)
+
+## 更新至 2019-08-20
+- 新增 [类加载器](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8)
+
 ## 更新至 2019-08-16
 - 新增 [Window / WindowManager](https://github.com/JasonWu1111/Android-Review/blob/master/Android知识点汇总.md#window--windowmanager)
 
