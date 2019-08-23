@@ -14,6 +14,7 @@
          * [对象存活判断](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#对象存活判断)
          * [垃圾收集算法](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#垃圾收集算法)
          * [垃圾收集器](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#垃圾收集器)
+         * [内存模型与回收策略](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#内存模型与回收策略)
    * [Object](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#object)
       * [equals 方法](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#equals-方法)
       * [hashCode 方法](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#hashcode-方法)
@@ -31,6 +32,8 @@
       * [双重检查模式](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#双重检查模式)
       * [静态内部类模式](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#静态内部类模式)
    * [线程](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#线程)
+      * [状态](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#状态)
+      * [状态控制](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#状态控制)
    * [volatile](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#volatile)
    * [HashMap](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#hashmap)
       * [HashMap的工作原理](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#hashmap的工作原理)
@@ -38,9 +41,10 @@
       * [根据获取的锁分类](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#根据获取的锁分类)
       * [原理](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#原理)
    * [Lock](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#lock)
-      * [悲观锁、乐观锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#悲观锁乐观锁)
-      * [自旋锁、适应性自旋锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#自旋锁适应性自旋锁)
-      * [死锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#死锁)
+      * [锁的分类](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#锁的分类)
+         * [悲观锁、乐观锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#悲观锁乐观锁)
+         * [自旋锁、适应性自旋锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#自旋锁适应性自旋锁)
+         * [死锁](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#死锁)
    * [引用类型](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#引用类型)
 
 ## Android 知识点汇总
@@ -200,6 +204,9 @@
          * [TCP 与 UDP 的区别](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#tcp-与-udp-的区别)
       * [Socket](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#socket)
          * [使用示例](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#使用示例-2)
+   * [类加载器](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#类加载器)
+      * [双亲委托模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#双亲委托模式)
+      * [DexPathList](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#dexpathlist) 
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
