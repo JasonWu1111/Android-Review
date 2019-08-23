@@ -27,7 +27,7 @@
 | BootstrapClassLoader | Bootstrap 类加载器负责加载 rt.jar 中的 JDK 类文件，它是所有类加载器的父加载器。Bootstrap 类加载器没有任何父类加载器，如果你调用 String.class.getClassLoader()，会返回 null，任何基于此的代码会抛出 NUllPointerException 异常。Bootstrap 加载器被称为初始类加载器 |
 | ExtClassLoader | 而 Extension 将加载类的请求先委托给它的父加载器，也就是Bootstrap，如果没有成功加载的话，再从 jre/lib/ext 目录下或者 java.ext.dirs 系统属性定义的目录下加载类。Extension 加载器由 sun.misc.Launcher$ExtClassLoader 实现 |
 | AppClassLoader | 第三种默认的加载器就是 System 类加载器（又叫作 Application 类加载器）了。它负责从 classpath 环境变量中加载某些应用相关的类，classpath 环境变量通常由 -classpath 或 -cp 命令行选项来定义，或者是 JAR 中的 Manifest 的 classpath 属性。Application 类加载器是 Extension 类加载器的子加载器 |
-&nbsp;
+
 | 工作原理 | 说明                      
 |----------|------|
 | 委托机制 | 加载任务委托交给父类加载器，如果不行就向下传递委托任务，由其子类加载器加载，保证 java 核心库的安全性 |
