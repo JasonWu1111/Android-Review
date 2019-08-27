@@ -1,4 +1,9 @@
 # Change Log
+## 更新至 2019-08-27
+- 新增 [匿名内部类](https://github.com/JasonWu1111/Android-Review/blob/master/Java%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB)
+- 新增 [代理模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F)
+- 新增 [责任链模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F)
+
 ## 更新至 2019-08-23
 - 更新 [Content Provider](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#contentprovider)
 - 更新 [线程 状态](https://github.com/JasonWu1111/Android-Review/blob/master/Java%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E7%8A%B6%E6%80%81)
