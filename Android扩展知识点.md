@@ -572,29 +572,47 @@ object InjectorUtils {
 | **行为型模式**<br>特别关注对象之间的通信。| 责任链模式（Chain of Responsibility Pattern）<br>命令模式（Command Pattern）<br>解释器模式（Interpreter Pattern）<br>迭代器模式（Iterator Pattern）<br>中介者模式（Mediator Pattern）<br>备忘录模式（Memento Pattern）<br>观察者模式（Observer Pattern）<br>状态模式（State Pattern）<br>空对象模式（Null Object Pattern）<br>策略模式（Strategy Pattern）<br>模板模式（Template Pattern）<br>访问者模式（Visitor Pattern）
 
 ## 工厂模式
+适用于复杂对象的创建。
+
+示例：
 ```java
 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.demo);
 ```
 
 ``BitmapFactory.java``
 ```java
-public static Bitmap decodeResource(Resources res, int id, Options opts) {
-    validate(opts);
-    Bitmap bm = null;
-    InputStream is = null; 
-    
-    try {
-        final TypedValue value = new TypedValue();
-        is = res.openRawResource(id, value);
-
-        bm = decodeResourceStream(res, value, is, null, opts);
-    } 
+// 生成 Bitmap 对象的工厂类 BitmapFactory
+public class BitmapFactory {
     ···
-    return bm;
+    public static Bitmap decodeFile(String pathName) {
+        ···
+    }
+    ···
+
+    public static Bitmap decodeResource(Resources res, int id, Options opts) {
+        validate(opts);
+        Bitmap bm = null;
+        InputStream is = null; 
+        
+        try {
+            final TypedValue value = new TypedValue();
+            is = res.openRawResource(id, value);
+
+            bm = decodeResourceStream(res, value, is, null, opts);
+        } 
+        ···
+        return bm;
+    }
+    ···
 }
+
 ```
 
 ## 单例模式
+确保某一个类只有一个实例，并自动实例化向整个系统提供这个实例，且可以避免产生多个对象消耗资源。
+
+示例：
+
 ``InputMethodManager.java``
 ```java
 /**
@@ -617,6 +635,9 @@ public static InputMethodManager getInstance() {
 ```
 
 ## 建造者模式
+将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示，适用于初始化的对象比较复杂且参数较多的情况。
+
+示例：
 ```java
 AlertDialog.Builder builder = new AlertDialog.Builder(this)
         .setTitle("Title")
@@ -664,6 +685,10 @@ public class AlertDialog extends Dialog implements DialogInterface {
 ```
 
 ## 原型模式
+用原型模式实例指定创建对象的种类，并通过拷贝这些原型创建新的对象。
+
+示例：
+
 ```java
 ArrayList<T> newArrayList = (ArrayList<T>) arrayList.clone();
 ```
@@ -690,6 +715,10 @@ public Object clone() {
 ```
 
 ## 适配器模式
+适配器模式把一个类的接口变成客户端所期待的另一种接口，从而使原因接口不匹配而无法一起工作的两个类能够在一起工作。
+
+示例：
+
 ```java
 RecyclerView recyclerView = findViewById(R.id.recycler_view);
 recyclerView.setAdapter(new MyAdapter());
@@ -771,6 +800,9 @@ public abstract static class Adapter<VH extends ViewHolder> {
 ```
 
 ## 观察者模式
+定义对象间一种一对多的依赖关系，使得每当一个对象改变状态，则所有依赖于它的对象都会得到通知并被自动更新。
+
+示例：
 ```java
 MyAdapter adapter = new MyAdapter();
 recyclerView.setAdapter(adapter);
@@ -829,6 +861,99 @@ private class RecyclerViewDataObserver extends AdapterDataObserver {
         if (!mAdapterHelper.hasPendingUpdates()) {
             requestLayout();
         }
+    }
+    ···
+}
+```
+
+## 代理模式
+为其他的对象提供一种代理以控制对这个对象的访问。适用于当无法或不想直接访问某个对象时通过一个代理对象来间接访问，为了保证客户端使用的透明性，委托对象与代理对象需要实现相同的接口。
+
+示例：
+
+``Context.java``
+```java
+public abstract class Context {
+    ···
+    public abstract void startActivity(@RequiresPermission Intent intent);
+    ···
+}
+```
+
+``ContextWrapper.java``
+```java
+public class ContextWrapper extends Context {
+    Context mBase; // 代理类，实为 ContextImpl 对象
+    ···
+
+    protected void attachBaseContext(Context base) {
+        if (mBase != null) {
+            throw new IllegalStateException("Base context already set");
+        }
+        mBase = base;
+    }
+    ···
+
+    @Override
+    public void startActivity(Intent intent) {
+        mBase.startActivity(intent); // 核心工作交由给代理类对象 mBase 实现
+    }
+    ···
+}
+```
+``ContextImpl.java``
+```java
+// Context 的真正实现类
+class ContextImpl extends Context {
+    ...
+    @Override
+    public void startActivity(Intent intent) {
+        warnIfCallingFromSystemProcess();
+        startActivity(intent, null);
+    }
+    ...
+}
+```
+
+## 责任链模式
+使多个对象都有机会处理请求，从而避免了请求的发送者和接受者之间的耦合。将这些对象连成一条链，并沿着这条链传递该请求，直到有对象处理它为止。
+
+``ViewGroup.java``
+```java
+@UiThread
+public abstract class ViewGroup extends View implements ViewParent, ViewManager {
+    ···
+    private boolean dispatchTransformedTouchEvent(MotionEvent event, boolean cancel,
+            View child, int desiredPointerIdBits) {
+        final boolean handled;
+        ···
+        final MotionEvent transformedEvent;
+        if (newPointerIdBits == oldPointerIdBits) {
+            if (child == null || child.hasIdentityMatrix()) {
+                if (child == null) {
+                    handled = super.dispatchTouchEvent(event);
+                } else {
+                    ···
+                    // 获取子 view 处理的结果
+                    handled = child.dispatchTouchEvent(event);
+                }
+                return handled;
+            }
+            transformedEvent = MotionEvent.obtain(event);
+        } else {
+            transformedEvent = event.split(newPointerIdBits);
+        }
+
+        // Perform any necessary transformations and dispatch.
+        if (child == null) {
+            handled = super.dispatchTouchEvent(transformedEvent);
+        } else {
+            ···
+            // 获取子 view 处理的结果
+            handled = child.dispatchTouchEvent(transformedEvent);
+        }
+        ···
+        return handled;
     }
     ···
 }
