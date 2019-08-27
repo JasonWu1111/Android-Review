@@ -23,6 +23,7 @@
    * [String、StringBuffer、StringBuilder](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#stringstringbufferstringbuilder)
    * [异常处理](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#异常处理)
    * [内部类](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#内部类)
+      * [匿名内部类](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#匿名内部类)
    * [多态](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#多态)
    * [抽象和接口](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#抽象和接口)
    * [集合](https://github.com/JasonWu1111/Android-Review/blob/master/Java知识点汇总.md#集合)
@@ -185,6 +186,8 @@
       * [原型模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#原型模式)
       * [适配器模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#适配器模式)
       * [观察者模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#观察者模式)
+      * [代理模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#代理模式)
+      * [责任链模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#责任链模式)
    * [NDK 开发](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#ndk-开发)
       * [JNI 基础](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#jni-基础)
          * [数据类型](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#数据类型)
@@ -206,7 +209,9 @@
          * [使用示例](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#使用示例-2)
    * [类加载器](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#类加载器)
       * [双亲委托模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#双亲委托模式)
-      * [DexPathList](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#dexpathlist) 
+      * [DexPathList](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#dexpathlist)
+   * [注解](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#注解)
+      * [Java元注解](https://github.com/JasonWu1111/Android-Review/blob/master/Android扩展知识点.md#java元注解)
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E7%AE%97%E6%B3%95%E9%A2%98%E6%B1%87%E6%80%BB.md#排序)
