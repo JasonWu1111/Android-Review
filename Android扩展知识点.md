@@ -959,6 +959,59 @@ public abstract class ViewGroup extends View implements ViewParent, ViewManager 
 }
 ```
 
+## 策略模式
+策略模式定义了一系列的算法，并封装起来，提供针对同一类型问题的多种处理方式。
+
+示例：
+
+```java
+// 匀速
+animation.setInterpolator(new LinearInterpolator());
+// 加速
+animation.setInterpolator(new AccelerateInterpolator());
+···
+```
+
+``BaseInterpolator.java``
+```java
+/**
+ * An abstract class which is extended by default interpolators.
+ */
+abstract public class BaseInterpolator implements Interpolator {
+    private @Config int mChangingConfiguration;
+    /**
+     * @hide
+     */
+    public @Config int getChangingConfiguration() {
+        return mChangingConfiguration;
+    }
+
+    /**
+     * @hide
+     */
+    void setChangingConfiguration(@Config int changingConfiguration) {
+        mChangingConfiguration = changingConfiguration;
+    }
+}
+```
+
+``LinearInterpolator.java``
+```java
+@HasNativeInterpolator
+public class LinearInterpolator extends BaseInterpolator implements NativeInterpolatorFactory {
+    ···
+}
+```
+
+``AccelerateInterpolator.java``
+```java
+@HasNativeInterpolator
+public class AccelerateInterpolator extends BaseInterpolator implements NativeInterpolatorFactory {
+    ···
+}
+```
+
+
 # NDK 开发
 > NDK 全称是 Native Development Kit，是一组可以让你在 Android 应用中编写实现 C/C++ 的工具，可以在项目用自己写源代码构建，也可以利用现有的预构建库。
 
