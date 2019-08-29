@@ -459,3 +459,41 @@ public interface Lock {
 | WeakReference （弱引用）| 在垃圾回收器运行的时候，如果对一个对象的所有引用都是弱引用的话，该对象会被回收 |
 | SoftReference（软引用）| 如果一个对象只具有软引用，若内存空间足够，垃圾回收器就不会回收它；如果内存空间不足了，才会回收这些对象的内存|
 | PhantomReference（虚引用） | 一个只被虚引用持有的对象可能会在任何时候被 GC 回收。虚引用对对象的生存周期完全没有影响，也无法通过虚引用来获取对象实例，仅仅能在对象被回收时，得到一个系统通知（只能通过是否被加入到 ReferenceQueue 来判断是否被GC，这也是唯一判断对象是否被 GC 的途径）。|
+
+# 动态代理
+
+示例：
+
+```java
+
+// 定义相关接口
+public interface BaseInterface {
+    void doSomething();
+}
+
+// 接口的相关实现类
+public class BaseImpl implements BaseInterface {
+    @Override
+    public void doSomething() {
+        System.out.println("doSomething");
+    }
+}
+
+public static void main(String args[]) {
+    BaseImpl base = new BaseImpl();
+    // Proxy 动态代理实现
+    BaseInterface proxyInstance = (BaseInterface) Proxy.newProxyInstance(base.getClass().getClassLoader(), base.getClass().getInterfaces(), new InvocationHandler() {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            if (method.getName().equals("doSomething")) {
+                method.invoke(base, args);
+                System.out.println("do more");
+            }
+            return null;
+        }
+    });
+
+    proxyInstance.doSomething();
+}
+
+```
