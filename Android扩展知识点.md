@@ -571,6 +571,16 @@ object InjectorUtils {
 | **结构型模式**<br>关注类和对象的组合。| 适配器模式（Adapter Pattern）<br>桥接模式（Bridge Pattern）<br>过滤器模式（Filter、Criteria Pattern）<br>组合模式（Composite Pattern）<br>装饰器模式（Decorator Pattern）<br>外观模式（Facade Pattern）<br>享元模式（Flyweight Pattern）<br>代理模式（Proxy Pattern）
 | **行为型模式**<br>特别关注对象之间的通信。| 责任链模式（Chain of Responsibility Pattern）<br>命令模式（Command Pattern）<br>解释器模式（Interpreter Pattern）<br>迭代器模式（Iterator Pattern）<br>中介者模式（Mediator Pattern）<br>备忘录模式（Memento Pattern）<br>观察者模式（Observer Pattern）<br>状态模式（State Pattern）<br>空对象模式（Null Object Pattern）<br>策略模式（Strategy Pattern）<br>模板模式（Template Pattern）<br>访问者模式（Visitor Pattern）
 
+## 面向对象六大原则
+| 原则 | 描述
+|--|--
+| 单一职责原则 | 一个类只负责一个功能领域中的相应职责。
+| 开闭原则 | 对象应该对于扩展是开放的，对于修改是封闭的。
+| 里氏替换原则 | 所有引用基类的地方必须能透明地使用其子类的对象。
+| 依赖倒置原则 | 高层模块不依赖低层模块，两者应该依赖其对象；抽象不应该依赖细节；细节应该依赖抽象。
+| 接口隔离原则 | 类间的依赖关系应该建立在最小的接口上。
+| 迪米特原则 | 也称最少知识原则，一个对象对其他对象有最少的了解。
+
 ## 工厂模式
 适用于复杂对象的创建。
 
