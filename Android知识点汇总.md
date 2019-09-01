@@ -40,7 +40,7 @@ override fun onSaveInstanceState(outState: Bundle?) {
 | 使用Intent标志 | 说明                      
 |----------|-----|
 | FLAG_ACTIVITY_NEW_TASK | 同 singleTask |
-| FLAG_ACTIVITY_SINGLE_TOP | 同s ingleTop |
+| FLAG_ACTIVITY_SINGLE_TOP | 同 singleTop |
 | FLAG_ACTIVITY_CLEAR_TOP | 如果正在启动的 activity 已在当前 task中 运行，则不会启动该activity 的新实例，而是销毁其上的 activity，并调用其 onNewIntent() |
 
 ## 启动过程
