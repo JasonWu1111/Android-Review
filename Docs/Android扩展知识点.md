@@ -1021,6 +1021,83 @@ public class AccelerateInterpolator extends BaseInterpolator implements NativeIn
 }
 ```
 
+## 备忘录模式
+在不破坏封闭的前提下，在对象之外保存保存对象的当前状态，并且在之后可以恢复到此状态。
+
+示例：
+
+``Activity.java``
+```java
+// 保存状态
+protected void onSaveInstanceState(Bundle outState) {
+    // 存储当前窗口的视图树的状态
+    outState.putBundle(WINDOW_HIERARCHY_TAG, mWindow.saveHierarchyState());
+
+    outState.putInt(LAST_AUTOFILL_ID, mLastAutofillId);
+    // 存储 Fragment 的状态
+    Parcelable p = mFragments.saveAllState();
+    if (p != null) {
+        outState.putParcelable(FRAGMENTS_TAG, p);
+    }
+    if (mAutoFillResetNeeded) {
+        outState.putBoolean(AUTOFILL_RESET_NEEDED, true);
+        getAutofillManager().onSaveInstanceState(outState);
+    }
+    // 调用 ActivityLifecycleCallbacks 的 onSaveInstanceState 进行存储状态
+    getApplication().dispatchActivitySaveInstanceState(this, outState);
+}
+
+···
+// onCreate 方法中恢复状态
+protected void onCreate(@Nullable Bundle savedInstanceState) {
+    ···
+    if (savedInstanceState != null) {
+        mAutoFillResetNeeded = savedInstanceState.getBoolean(AUTOFILL_RESET_NEEDED, false);
+        mLastAutofillId = savedInstanceState.getInt(LAST_AUTOFILL_ID,
+                View.LAST_APP_AUTOFILL_ID);
+
+        if (mAutoFillResetNeeded) {
+            getAutofillManager().onCreate(savedInstanceState);
+        }
+
+        Parcelable p = savedInstanceState.getParcelable(FRAGMENTS_TAG);
+        mFragments.restoreAllState(p, mLastNonConfigurationInstances != null
+                ? mLastNonConfigurationInstances.fragments : null);
+    }
+    mFragments.dispatchCreate();
+    getApplication().dispatchActivityCreated(this, savedInstanceState);
+    ···
+    mRestoredFromBundle = savedInstanceState != null;
+    mCalled = true;
+}
+```
+
+``ActivityThread.java``
+```java
+@Override
+public void handleStartActivity(ActivityClientRecord r,
+        PendingTransactionActions pendingActions) {
+    final Activity activity = r.activity;
+    ···
+    // Start
+    activity.performStart("handleStartActivity");
+    r.setState(ON_START);
+    ···
+    // Restore instance state
+    if (pendingActions.shouldRestoreInstanceState()) {
+        if (r.isPersistable()) {
+            if (r.state != null || r.persistentState != null) {
+                mInstrumentation.callActivityOnRestoreInstanceState(activity, r.state,
+                        r.persistentState);
+            }
+        } else if (r.state != null) {
+            mInstrumentation.callActivityOnRestoreInstanceState(activity, r.state);
+        }
+    }
+    ···
+}
+```
+
 
 # NDK 开发
 > NDK 全称是 Native Development Kit，是一组可以让你在 Android 应用中编写实现 C/C++ 的工具，可以在项目用自己写源代码构建，也可以利用现有的预构建库。
