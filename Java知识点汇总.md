@@ -223,10 +223,341 @@ public int hashCode() {
 - 接口中的所有属性默认为：public static final ****；
 - 接口中的所有方法默认为：public abstract ****；
 
-# 集合
+# 集合框架
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4a86db5e6?w=643&h=611&f=gif&s=22445)
 - List接口存储一组不唯一，有序（插入顺序）的对象, Set接口存储一组唯一，无序的对象。
-- HashMap 是非 synchronized 的，性能更好，HashMap 可以接受为 null 的 key 和 value，而 Hashtable 是线程安全的，比 HashMap 要慢，不接受 null
+
+## HashMap
+### 结构图
+- **JDK 1.7 HashMap 结构图**
+![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4ac8f44fd?w=1636&h=742&f=png&s=88323)
+
+- **JDK 1.8 HashMap 结构图**
+![](https://user-gold-cdn.xitu.io/2018/7/23/164c47f32f9650ba?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+### HashMap 的工作原理
+HashMap 基于 hashing 原理，我们通过 put() 和 get() 方法储存和获取对象。当我们将键值对传递给 put() 方法时，它调用键对象的 hashCode() 方法来计算 hashcode，让后找到 bucket 位置来储存 Entry 对象。当两个对象的 hashcode 相同时，它们的 bucket 位置相同，‘碰撞’会发生。因为 HashMap 使用链表存储对象，这个 Entry 会存储在链表中，当获取对象时，通过键对象的 equals() 方法找到正确的键值对，然后返回值对象。
+
+**如果 HashMap 的大小超过了负载因子(load factor)定义的容量，怎么办？**  
+默认的负载因子大小为 0.75，也就是说，当一个 map 填满了 75% 的 bucket 时候，和其它集合类(如 ArrayList 等)一样，将会创建原来 HashMap 大小的两倍的 bucket 数组，来重新调整 map 的大小，并将原来的对象放入新的 bucket 数组中。这个过程叫作 rehashing，因为它调用 hash 方法找到新的 bucket 位置。
+
+**为什么 String, Interger 这样的 wrapper 类适合作为键?**  
+因为 String 是不可变的，也是 final 的，而且已经重写了 equals() 和 hashCode() 方法了。其他的 wrapper 类也有这个特点。不可变性是必要的，因为为了要计算 hashCode()，就要防止键值改变，如果键值在放入时和获取时返回不同的 hashcode 的话，那么就不能从 HashMap 中找到你想要的对象。不可变性还有其他的优点如线程安全。如果你可以仅仅通过将某个 field 声明成 final 就能保证 hashCode 是不变的，那么请这么做吧。因为获取对象的时候要用到 equals() 和 hashCode() 方法，那么键对象正确的重写这两个方法是非常重要的。如果两个不相等的对象返回不同的 hashcode 的话，那么碰撞的几率就会小些，这样就能提高 HashMap 的性能。
+
+### HashMap 与 HashTable 对比
+HashMap 是非 synchronized 的，性能更好，HashMap 可以接受为 null 的 key-value，而 Hashtable 是线程安全的，比 HashMap 要慢，不接受 null 的 key-value。
+
+``HashMap.java``
+```java
+public class HashMap<K,V> extends AbstractMap<K,V>
+    implements Map<K,V>, Cloneable, Serializable {
+    ···
+
+    public V put(K key, V value) {
+        return putVal(hash(key), key, value, false, true);
+    }
+    ···
+
+    public V get(Object key) {
+        Node<K,V> e;
+        return (e = getNode(hash(key), key)) == null ? null : e.value;
+    }
+    ···
+}
+```
+
+``HashTable.java``
+```java
+public class Hashtable<K,V>
+    extends Dictionary<K,V>
+    implements Map<K,V>, Cloneable, java.io.Serializable {
+    ···
+
+    public synchronized V put(K key, V value) {
+        // Make sure the value is not null
+        if (value == null) {
+            throw new NullPointerException();
+        }
+
+        ···
+        addEntry(hash, key, value, index);
+        return null;
+    }
+    ···
+
+    public synchronized V get(Object key) {
+        HashtableEntry<?,?> tab[] = table;
+        int hash = key.hashCode();
+        int index = (hash & 0x7FFFFFFF) % tab.length;
+        for (HashtableEntry<?,?> e = tab[index] ; e != null ; e = e.next) {
+            if ((e.hash == hash) && e.key.equals(key)) {
+                return (V)e.value;
+            }
+        }
+        return null;
+    }
+    ···
+}
+```
+
+## ConcurrentHashMap
+### Base 1.7
+
+ConcurrentHashMap 最外层不是一个大的数组，而是一个 Segment 的数组。每个 Segment 包含一个与 HashMap 数据结构差不多的链表数组。
+
+![](http://www.jasongj.com/img/java/concurrenthashmap/concurrenthashmap_java7.png)
+
+在读写某个 Key 时，先取该 Key 的哈希值。并将哈希值的高 N 位对 Segment 个数取模从而得到该 Key 应该属于哪个Segment，接着如同操作 HashMap 一样操作这个 Segment。
+
+Segment 继承自 ReentrantLock，可以很方便的对每一个 Segmen 上锁。
+
+对于读操作，获取 Key 所在的 Segment 时，需要保证可见性。具体实现上可以使用volatile关键字，也可使用锁。但使用锁开销太大，而使用volatile时每次写操作都会让所有CPU内缓存无效，也有一定开销。ConcurrentHashMap 使用如下方法保证可见性，取得最新的Segment：
+```java
+Segment<K,V> s = (Segment<K,V>)UNSAFE.getObjectVolatile(segments, u)
+```
+
+获取 Segment 中的 HashEntry 时也使用了类似方法：
+```java
+HashEntry<K,V> e = (HashEntry<K,V>) UNSAFE.getObjectVolatile
+  (tab, ((long)(((tab.length - 1) & h)) << TSHIFT) + TBASE)
+```
+
+对于写操作，并不要求同时获取所有 Segment 的锁，因为那样相当于锁住了整个Map。它会先获取该 Key-Value 对所在的 Segment 的锁，获取成功后就可以像操作一个普通的 HashMap 一样操作该 Segment，并保证该 Segment 的安全性。同时由于其它 Segment 的锁并未被获取，因此理论上可支持 concurrencyLevel（等于Segment的个数）个线程安全的并发读写。
+
+获取锁时，并不直接使用 lock 来获取，因为该方法获取锁失败时会挂起。事实上，它使用了自旋锁，如果 tryLock 获取锁失败，说明锁被其它线程占用，此时通过循环再次以 tryLock 的方式申请锁。如果在循环过程中该 Key 所对应的链表头被修改，则重置 retry 次数。如果 retry 次数超过一定值，则使用 lock 方法申请锁。
+
+这里使用自旋锁是因为自旋锁的效率比较高，但是它消耗 CPU 资源比较多，因此在自旋次数超过阈值时切换为互斥锁。
+
+### Base 1.8  
+1.7 已经解决了并发问题，并且能支持 N 个 Segment 这么多次数的并发，但依然存在 HashMap 在 1.7 版本中的问题：查询遍历链表效率太低。因此 1.8 做了一些数据结构上的调整。
+
+![](https://user-gold-cdn.xitu.io/2018/7/23/164c47f3756eb206?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
+
+其中抛弃了原有的 Segment 分段锁，而采用了 CAS + synchronized 来保证并发安全性。
+
+``ConcurrentHashMap.java``
+```java
+final V putVal(K key, V value, boolean onlyIfAbsent) {
+    if (key == null || value == null) throw new NullPointerException();
+    int hash = spread(key.hashCode());
+    int binCount = 0;
+    for (Node<K,V>[] tab = table;;) {
+        Node<K,V> f; int n, i, fh;
+        if (tab == null || (n = tab.length) == 0)
+            tab = initTable();
+        else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+            if (casTabAt(tab, i, null,
+                            new Node<K,V>(hash, key, value, null)))
+                break;                   // no lock when adding to empty bin
+        }
+        else if ((fh = f.hash) == MOVED)
+            tab = helpTransfer(tab, f);
+        else {
+            V oldVal = null;
+            synchronized (f) {
+                if (tabAt(tab, i) == f) {
+                    if (fh >= 0) {
+                        binCount = 1;
+                        ···
+                    }
+                    else if (f instanceof TreeBin) {
+                       ···
+                    }
+                    else if (f instanceof ReservationNode)
+                        throw new IllegalStateException("Recursive update");
+                }
+            }
+            ···
+    }
+    addCount(1L, binCount);
+    return null;
+}
+```
+
+## ArrayList
+ArrayList 本质上是一个动态数组，第一次添加元素时，数组大小将变化为 DEFAULT_CAPACITY 10，不断添加元素后，会进行扩容。删除元素时，会按照位置关系把数组元素整体（复制）移动一遍。
+
+``ArrayList.java``
+```java
+public class ArrayList<E> extends AbstractList<E>
+        implements List<E>, RandomAccess, Cloneable, java.io.Serializable
+    ···
+
+    // 增加元素
+    public boolean add(E e) {
+        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        elementData[size++] = e;
+        return true;
+    }
+    ···
+
+    // 删除元素
+    public E remove(int index) {
+        if (index >= size)
+            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+
+        modCount++;
+        E oldValue = (E) elementData[index];
+
+        int numMoved = size - index - 1;
+        if (numMoved > 0)
+            System.arraycopy(elementData, index+1, elementData, index,
+                             numMoved);
+        elementData[--size] = null; // clear to let GC do its work
+
+        return oldValue;
+    }
+    ···
+
+    // 查找元素
+    public E get(int index) {
+        if (index >= size)
+            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+
+        return (E) elementData[index];
+    }
+    ···
+}
+```
+
+## LinkedList
+LinkedList 本质上是一个双向链表的存储结构。
+
+``LinkedList.java``
+```java
+public class LinkedList<E>
+    extends AbstractSequentialList<E>
+    implements List<E>, Deque<E>, Cloneable, java.io.Serializable
+{
+    ····
+
+    private static class Node<E> {
+        E item;
+        Node<E> next;
+        Node<E> prev;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+    ···
+    
+    // 增加元素
+    void linkLast(E e) {
+        final Node<E> l = last;
+        final Node<E> newNode = new Node<>(l, e, null);
+        last = newNode;
+        if (l == null)
+            first = newNode;
+        else
+            l.next = newNode;
+        size++;
+        modCount++;
+    }
+    ···
+
+    // 删除元素
+    E unlink(Node<E> x) {
+        final E element = x.item;
+        final Node<E> next = x.next;
+        final Node<E> prev = x.prev;
+
+        if (prev == null) {
+            first = next;
+        } else {
+            prev.next = next;
+            x.prev = null;
+        }
+
+        if (next == null) {
+            last = prev;
+        } else {
+            next.prev = prev;
+            x.next = null;
+        }
+
+        x.item = null;
+        size--;
+        modCount++;
+        return element;
+    }
+    ···
+
+    // 查找元素
+    Node<E> node(int index) {
+        // assert isElementIndex(index);
+
+        if (index < (size >> 1)) {
+            Node<E> x = first;
+            for (int i = 0; i < index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node<E> x = last;
+            for (int i = size - 1; i > index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
+    ···
+}
+```
+
+对于元素查询来说，ArrayList 优于 LinkedList，因为 LinkedList 要移动指针。对于新增和删除操作，LinedList 比较占优势，因为 ArrayList 要移动数据。
+
+## CopyOnWriteArrayList
+CopyOnWriteArrayList 是线程安全容器(相对于 ArrayList)，增加删除等写操作通过加锁的形式保证数据一致性，通过复制新集合的方式解决遍历迭代的问题。
+
+``CopyOnWriteArrayList.java``
+```java
+public class CopyOnWriteArrayList<E>
+    implements List<E>, RandomAccess, Cloneable, java.io.Serializable {
+ 
+    final transient Object lock = new Object();
+    ···
+
+    // 增加元素
+    public boolean add(E e) {
+        synchronized (lock) {
+            Object[] elements = getArray();
+            int len = elements.length;
+            Object[] newElements = Arrays.copyOf(elements, len + 1);
+            newElements[len] = e;
+            setArray(newElements);
+            return true;
+        }
+    }
+    ···
+
+    // 删除元素
+    public E remove(int index) {
+        synchronized (lock) {
+            Object[] elements = getArray();
+            int len = elements.length;
+            E oldValue = get(elements, index);
+            int numMoved = len - index - 1;
+            if (numMoved == 0)
+                setArray(Arrays.copyOf(elements, len - 1));
+            else {
+                Object[] newElements = new Object[len - 1];
+                System.arraycopy(elements, 0, newElements, 0, index);
+                System.arraycopy(elements, index + 1, newElements, index,
+                                 numMoved);
+                setArray(newElements);
+            }
+            return oldValue;
+        }
+    }
+    ···
+    
+    // 查找元素
+    private E get(Object[] a, int index) {
+        return (E) a[index];
+    }
+}
+```
 
 # 反射
 ```java
@@ -376,17 +707,6 @@ public class CustomManager{
 
 AtomicInteger 中主要实现了整型的原子操作，防止并发情况下出现异常结果，其内部主要依靠 JDK 中的 unsafe 类操作内存中的数据来实现的。volatile 修饰符保证了 value 在内存中其他线程可以看到其值得改变。CAS（Compare and Swap）操作保证了 AtomicInteger 可以安全的修改value 的值。
 
-# HashMap
-![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4ac8f44fd?w=1636&h=742&f=png&s=88323)
-## HashMap的工作原理
-HashMap 基于 hashing 原理，我们通过 put() 和 get() 方法储存和获取对象。当我们将键值对传递给 put() 方法时，它调用键对象的 hashCode() 方法来计算 hashcode，让后找到 bucket 位置来储存 Entry 对象。当两个对象的 hashcode 相同时，它们的 bucket 位置相同，‘碰撞’会发生。因为 HashMap 使用链表存储对象，这个 Entry 会存储在链表中，当获取对象时，通过键对象的 equals() 方法找到正确的键值对，然后返回值对象。
-
-**如果 HashMap 的大小超过了负载因子(load factor)定义的容量，怎么办？**  
-默认的负载因子大小为 0.75，也就是说，当一个 map 填满了 75% 的 bucket 时候，和其它集合类(如 ArrayList 等)一样，将会创建原来 HashMap 大小的两倍的 bucket 数组，来重新调整 map 的大小，并将原来的对象放入新的 bucket 数组中。这个过程叫作 rehashing，因为它调用 hash 方法找到新的 bucket 位置。
-
-**为什么 String, Interger 这样的 wrapper 类适合作为键?**  
-因为 String 是不可变的，也是 final 的，而且已经重写了 equals() 和 hashCode() 方法了。其他的 wrapper 类也有这个特点。不可变性是必要的，因为为了要计算 hashCode()，就要防止键值改变，如果键值在放入时和获取时返回不同的 hashcode 的话，那么就不能从 HashMap 中找到你想要的对象。不可变性还有其他的优点如线程安全。如果你可以仅仅通过将某个 field 声明成 final 就能保证 hashCode 是不变的，那么请这么做吧。因为获取对象的时候要用到 equals() 和 hashCode() 方法，那么键对象正确的重写这两个方法是非常重要的。如果两个不相等的对象返回不同的 hashcode 的话，那么碰撞的几率就会小些，这样就能提高 HashMap 的性能。
-
 # synchronized
 当它用来修饰一个方法或者一个代码块的时候，能够保证在同一时刻最多只有一个线程执行该段代码。
 
@@ -467,7 +787,6 @@ public interface Lock {
 示例：
 
 ```java
-
 // 定义相关接口
 public interface BaseInterface {
     void doSomething();
@@ -497,5 +816,46 @@ public static void main(String args[]) {
 
     proxyInstance.doSomething();
 }
+```
 
+``Proxy.java``
+```java
+    ···
+    public static Object newProxyInstance(ClassLoader loader,
+                                          Class<?>[] interfaces,
+                                          InvocationHandler h)
+        throws IllegalArgumentException
+    {
+        Objects.requireNonNull(h);
+
+        final Class<?>[] intfs = interfaces.clone();
+        /*
+         * Look up or generate the designated proxy class.
+         */
+        Class<?> cl = getProxyClass0(loader, intfs);
+
+        /*
+         * Invoke its constructor with the designated invocation handler.
+         */
+        try {
+            final Constructor<?> cons = cl.getConstructor(constructorParams);
+            final InvocationHandler ih = h;
+            if (!Modifier.isPublic(cl.getModifiers())) {
+                cons.setAccessible(true);
+            }
+            return cons.newInstance(new Object[]{h});
+        } catch (IllegalAccessException|InstantiationException e) {
+            throw new InternalError(e.toString(), e);
+        } catch (InvocationTargetException e) {
+            Throwable t = e.getCause();
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            } else {
+                throw new InternalError(t.toString(), t);
+            }
+        } catch (NoSuchMethodException e) {
+            throw new InternalError(e.toString(), e);
+        }
+    }
+    ···
 ```
