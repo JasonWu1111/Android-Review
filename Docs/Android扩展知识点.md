@@ -1166,7 +1166,7 @@ Java_com_example_myjniproject_MainActivity_stringFromJNI(
 >- extern "C" 指定采用 C 语言的命名风格来编译，否则由于 C 与 C++ 风格不同，导致链接时无法找到具体的函数
 >- JNIEnv*：表示一个指向 JNI 环境的指针，可以通过他来访问 JNI 提供的接口方法
 >- jobject：表示 java 对象中的 this
->- JNIEXPORT 和 JNICALL：
+>- JNIEXPORT 和 JNICALL：JNI 所定义的宏，可以在 jni.h 头文件中查找到
 
 - 通过 CMake 或者 ndk-build 构建动态库
 
@@ -1422,32 +1422,11 @@ public Class findClass(String name) {
 ···
 ```
 
-# 注解
-## Java元注解
-@Retention：保留的范围，可选值有三种。
-| RetentionPolicy | 说明
-|----|----
-| SOURCE |只在源码中可用
-| CLASS | 在源码和字节码中可用
-| RUNTIME | 在源码、字节码、运行时均可用
-
-@Target：可以用来修饰哪些程序元素，如 TYPE, METHOD, CONSTRUCTOR, FIELD, PARAMETER等，未标注则表示可修饰所有
-
-@Inherited：是否可以被继承，默认为false  
-
-@Documented：是否会保存到 Javadoc 文档中
-
-# Heap Dump
-Heap Dump 之后，可以查看以下内容：
-- 应用分配了哪些类型的对象，以及每种对象的数量。
-- 每个对象使用多少内存。
-- 代码中保存对每个对象的引用。
-- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
-
 # LeakCanary
 ![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
 ## 初始化注册
 在清单文件中注册了一个 ContentProvider 用于在应用启动时初始化代码：  
+
 ``leakcanary-leaksentry/*/AndroidManifest.xml``
 ```xml
 ···
@@ -1460,37 +1439,44 @@ Heap Dump 之后，可以查看以下内容：
 ···
 ```
 
+在 LeakSentryInstaller 生命周期 ``onCreate()`` 方法中完成初始化步骤：
+
 ``LeakSentryInstaller.kt``
 ```kotlin
 internal class LeakSentryInstaller : ContentProvider() {
 
-  override fun onCreate(): Boolean {
-    CanaryLog.logger = DefaultCanaryLog()
-    val application = context!!.applicationContext as Application
-    InternalLeakSentry.install(application)
-    return true
-  }
+    override fun onCreate(): Boolean {
+        CanaryLog.logger = DefaultCanaryLog()
+        val application = context!!.applicationContext as Application
+        InternalLeakSentry.install(application)
+        return true
+    }
 ···
 ```
+
+然后分别注册 Activity/Fragment 的监听：
+
 ``InternalLeakSentry.kt``
 ```kotlin
-fun install(application: Application) {
-    CanaryLog.d("Installing LeakSentry")
-    checkMainThread()
-    if (this::application.isInitialized) {
-      return
-    }
-    InternalLeakSentry.application = application
+···
+    fun install(application: Application) {
+        CanaryLog.d("Installing LeakSentry")
+        checkMainThread()
+        if (this::application.isInitialized) {
+        return
+        }
+        InternalLeakSentry.application = application
 
-    val configProvider = { LeakSentry.config }
-    ActivityDestroyWatcher.install(
-        application, refWatcher, configProvider
-    )
-    FragmentDestroyWatcher.install(
-        application, refWatcher, configProvider
-    )
-    listener.onLeakSentryInstalled(application)
-}
+        val configProvider = { LeakSentry.config }
+        ActivityDestroyWatcher.install(
+            application, refWatcher, configProvider
+        )
+        FragmentDestroyWatcher.install(
+            application, refWatcher, configProvider
+        )
+        listener.onLeakSentryInstalled(application)
+    }
+···
 ```
 ``ActivityDestroyWatcher.kt``
 ```kotlin
@@ -1570,6 +1556,8 @@ fun install(application: Application) {
 ```
 
 ## Dump Heap
+发现泄漏之后，获取 Heamp Dump 相关文件：
+
 ``AndroidHeapDumper.kt``
 ```kotlin
 ···
@@ -1593,7 +1581,7 @@ fun install(application: Application) {
             notificationManager.cancel(R.id.leak_canary_notification_dumping_heap)
         }
     }
-    ···
+···
 ```
 
 ``HeapDumpTrigger.kt``
@@ -1611,7 +1599,8 @@ fun install(application: Application) {
 ···
 ```
 
-启动一个 HeapAnalyzerService 来分析 heapDumpFile
+启动一个 HeapAnalyzerService 来分析 heapDumpFile：
+
 ``HeapAnalyzerService.kt``
 ```kotlin
 ···
@@ -1633,6 +1622,12 @@ fun install(application: Application) {
 ···
 ```
 
-# Glide
-![](https://raw.githubusercontent.com/JsonChao/Awesome-Third-Library-Source-Analysis/master/ScreenShots/Glide%E6%A1%86%E6%9E%B6%E5%9B%BE.jpg)
+>Heap Dump 之后，可以查看以下内容：
+>- 应用分配了哪些类型的对象，以及每种对象的数量。
+>- 每个对象使用多少内存。
+>- 代码中保存对每个对象的引用。
+>- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
+
+<!-- # Glide
+![](https://raw.githubusercontent.com/JsonChao/Awesome-Third-Library-Source-Analysis/master/ScreenShots/Glide%E6%A1%86%E6%9E%B6%E5%9B%BE.jpg) -->
 

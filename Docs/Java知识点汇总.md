@@ -1,5 +1,5 @@
-# jvm
-## jvm工作流程
+# JVM
+## JVM 工作流程
 ![](https://user-gold-cdn.xitu.io/2019/6/23/16b833f4a4906226?w=448&h=592&f=jpeg&s=44057)
 
 ## 运行时数据区（Runtime Data Area）
@@ -820,42 +820,48 @@ public static void main(String args[]) {
 
 ``Proxy.java``
 ```java
-    ···
-    public static Object newProxyInstance(ClassLoader loader,
-                                          Class<?>[] interfaces,
-                                          InvocationHandler h)
-        throws IllegalArgumentException
-    {
-        Objects.requireNonNull(h);
+public static Object newProxyInstance(ClassLoader loader,
+                                        Class<?>[] interfaces,
+                                        InvocationHandler h)
+    throws IllegalArgumentException
+{
+    Objects.requireNonNull(h);
 
-        final Class<?>[] intfs = interfaces.clone();
-        /*
-         * Look up or generate the designated proxy class.
-         */
-        Class<?> cl = getProxyClass0(loader, intfs);
+    final Class<?>[] intfs = interfaces.clone();
+    /*
+        * Look up or generate the designated proxy class.
+        */
+    Class<?> cl = getProxyClass0(loader, intfs);
 
-        /*
-         * Invoke its constructor with the designated invocation handler.
-         */
-        try {
-            final Constructor<?> cons = cl.getConstructor(constructorParams);
-            final InvocationHandler ih = h;
-            if (!Modifier.isPublic(cl.getModifiers())) {
-                cons.setAccessible(true);
-            }
-            return cons.newInstance(new Object[]{h});
-        } catch (IllegalAccessException|InstantiationException e) {
-            throw new InternalError(e.toString(), e);
-        } catch (InvocationTargetException e) {
-            Throwable t = e.getCause();
-            if (t instanceof RuntimeException) {
-                throw (RuntimeException) t;
-            } else {
-                throw new InternalError(t.toString(), t);
-            }
-        } catch (NoSuchMethodException e) {
-            throw new InternalError(e.toString(), e);
+    /*
+        * Invoke its constructor with the designated invocation handler.
+        */
+    try {
+        final Constructor<?> cons = cl.getConstructor(constructorParams);
+        final InvocationHandler ih = h;
+        if (!Modifier.isPublic(cl.getModifiers())) {
+            cons.setAccessible(true);
         }
+        return cons.newInstance(new Object[]{h});
+    } catch (IllegalAccessException|InstantiationException e) {
+        throw new InternalError(e.toString(), e);
+    } catch (InvocationTargetException e) {
+        Throwable t = e.getCause();
+        if (t instanceof RuntimeException) {
+            throw (RuntimeException) t;
+        } else {
+            throw new InternalError(t.toString(), t);
+        }
+    } catch (NoSuchMethodException e) {
+        throw new InternalError(e.toString(), e);
     }
-    ···
+}
 ```
+
+# 元注解
+| 注解 | 说明
+|--|--
+| @Retention | 保留的范围，**RetentionPolicy** 可选值有三种：<br>``SOURCE``：只在源码中可用<br>``CLASS``：在源码和字节码中可用<br>``RUNTIME``：在源码、字节码、运行时均可用
+| @Target | 可以用来修饰哪些程序元素，如 ``TYPE``, ``METHOD``, ``CONSTRUCTOR``, ``FIELD``, ``PARAMETER`` 等，未标注则表示可修饰所有
+| @Inherited | 是否可以被继承，默认为false  
+| @Documented | 是否会保存到 Javadoc 文档中
