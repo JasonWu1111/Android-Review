@@ -36,7 +36,7 @@ override fun onSaveInstanceState(outState: Bundle?) {
 | singleTop | 如果activity的实例已存在于当前任务的顶部，则系统通过调用其onNewIntent()，否则会创建新实例 |
 | singleTask | 系统创建新 task 并在 task 的根目录下实例化 activity。但如果 activity 的实例已存在于单独的任务中，则调用其 onNewIntent() 方法，其上面的实例会被移除栈。一次只能存在一个 activity 实例 |
 | singleInstance | 相同 singleTask，activity始终是其task的唯一成员; 任何由此开始的activity 都在一个单独的 task 中打开 |
-&nbsp;
+
 | 使用Intent标志 | 说明                      
 |----------|-----|
 | FLAG_ACTIVITY_NEW_TASK | 同 singleTask |
