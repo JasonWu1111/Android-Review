@@ -1,4 +1,19 @@
 # Change Log
+## 更新至 2019-09-03
+- 新增 [ConcurrentHashMap](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#concurrenthashmap)
+- 新增 [ArrayList](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#arraylist)
+- 新增 [LinkedList](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#linkedlist)
+- 新增 [CopyOnWriteArrayList](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#copyonwritearraylist)
+
+## 更新至 2019-08-31
+- 新增 [面向对象六大原则](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#面向对象六大原则)
+
+## 更新至 2019-08-29
+- 新增 [动态代理](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#动态代理)
+
+## 更新至 2019-08-28
+- 新增 [策略模式](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#策略模式)
+
 ## 更新至 2019-08-27
 - 新增 [匿名内部类](https://github.com/JasonWu1111/Android-Review/blob/master/Java%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#%E5%8C%BF%E5%90%8D%E5%86%85%E9%83%A8%E7%B1%BB)
 - 新增 [代理模式](https://github.com/JasonWu1111/Android-Review/blob/master/Android%E6%89%A9%E5%B1%95%E7%9F%A5%E8%AF%86%E7%82%B9.md#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F)

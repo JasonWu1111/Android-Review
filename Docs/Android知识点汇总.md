@@ -229,7 +229,7 @@ private void handleBindService(BindServiceData data) {
 }
 ```
 
-## 生命周期：
+## 生命周期
 ![](https://upload-images.jianshu.io/upload_images/944365-cf5c1a9d2dddaaca.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/456/format/webp)
 | 值 | 说明 |
 |-----|-----|
@@ -237,7 +237,7 @@ private void handleBindService(BindServiceData data) {
 | START_STICKY | 如果系统在 onStartCommand() 返回后终止服务，则会重建服务并调用 onStartCommand()，但不会重新传递最后一个 Intent。相反，除非有挂起 Intent 要启动服务（在这种情况下，将传递这些 Intent ），否则系统会通过空 Intent 调用 onStartCommand()。这适用于不执行命令、但无限期运行并等待作业的媒体播放器（或类似服务 |
 | START_REDELIVER_INTENT | 如果系统在 onStartCommand() 返回后终止服务，则会重建服务，并通过传递给服务的最后一个 Intent 调用 onStartCommand()。任何挂起 Intent 均依次传递。这适用于主动执行应该立即恢复的作业（例如下载文件）的服务 |
 
-## 启用前台服务：
+## 启用前台服务
 ```java
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 ```
@@ -476,7 +476,7 @@ public void computeScroll() {
 }
 ```
 
-## View的滑动
+## View 的滑动
 - ``scrollTo/scrollBy``  
 适合对 View 内容的滑动。``scrollBy`` 实际上也是调用了 ``scrollTo`` 方法：
 ```java
@@ -512,7 +512,7 @@ view.requestLayout();
 //或者 view.setLayoutParams(params);
 ```
 
-## View的事件分发
+## View 的事件分发
 点击事件达到顶级 View(一般是一个 ViewGroup)，会调用 ViewGroup 的 dispatchTouchEvent 方法，如果顶级 ViewGroup 拦截事件即 onInterceptTouchEvent 返回 true，则事件由 ViewGroup 处理，这时如果 ViewGroup 的 mOnTouchListener 被设置，则 onTouch 会被调用，否则 onTouchEvent 会被调用。也就是说如果都提供的话，onTouch 会屏蔽掉 onTouchEvent。在 onTouchEvent 中，如果设置了 mOnClickListenser，则 onClick 会被调用。如果顶级 ViewGroup 不拦截事件，则事件会传递给它所在的点击事件链上的子 View，这时子 View 的 dispatchTouchEvent 会被调用。如此循环。
 
 ![](https://user-gold-cdn.xitu.io/2019/7/19/16c08654e36be140?imageView2/0/w/1280/h/960/format/webp/ignore-error/1)
@@ -528,7 +528,7 @@ view.requestLayout();
 - ACTION_DOWN 被拦截了，onInterceptTouchEvent 方法执行一次后，就会留下记号（mFirstTouchTarget == null）那么往后的 ACTION_MOVE 和 ACTION_UP 都会拦截。`
 
 
-## 在Activity中获取某个View的宽高
+## 在 Activity 中获取某个 View 的宽高
 - Activity/View#onWindowFocusChanged
 ```
 // 此时View已经初始化完毕
@@ -578,7 +578,7 @@ protected void onStart() {
 }
 ```
 
-## Draw的基本流程
+## Draw 的基本流程
 ```java
 // 绘制基本上可以分为六个步骤
 public void draw(Canvas canvas) {
@@ -607,7 +607,7 @@ public void draw(Canvas canvas) {
 }
 ```
 
-## 自定义View
+## 自定义 View
 - 继承 View 重写 ``onDraw`` 方法
   
 主要用于实现一些不规则的效果，静态或者动态地显示一些不规则的图形，即重写 ``onDraw`` 方法。采用这种方式需要自己支持 wrap_content，并且 padding 也需要自己处理。
@@ -1448,8 +1448,6 @@ try {
 }
 ```
 
-### 
-
 ## 内存回收
 ```java
 if(bitmap != null && !bitmap.isRecycled()){ 
@@ -1634,7 +1632,7 @@ SharedPreferences 与 Editor 只是两个接口. SharedPreferencesImpl 和 Edito
 - 不要连续多次 edit()，应该获取一次获取 edit()，然后多次执行 putxxx()，减少内存波动
 
 # 消息机制
-## Handler机制
+## Handler 机制
 Handler 有两个主要用途：（1）安排 Message 和 runnables 在将来的某个时刻执行; （2）将要在不同于自己的线程上执行的操作排入队列。(在多个线程并发更新UI的同时保证线程安全。)
 
 Android 规定访问 UI 只能在主线程中进行，因为 Android 的 UI 控件不是线程安全的，多线程并发访问会导致 UI 控件处于不可预期的状态。为什么系统不对 UI 控件的访问加上锁机制？缺点有两个：加锁会让 UI 访问的逻辑变得复杂；其次锁机制会降低 UI 访问的效率。如果子线程访问 UI，那么程序就会抛出异常。ViewRootImpl 对UI操作做了验证，这个验证工作是由 ViewRootImpl的 ``checkThread`` 方法完成：
