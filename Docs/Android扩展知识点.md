@@ -1422,10 +1422,10 @@ public Class findClass(String name) {
 ···
 ```
 
-<<<<<<< HEAD:Android扩展知识点.md
 # 注解
 ## Java元注解
 @Retention：保留的范围，可选值有三种。
+
 | RetentionPolicy | 说明
 |----|----
 | SOURCE | 注解将被编译器丢弃（该类型的注解信息只会保留在源码里，源码经过编译后，注解信息会被丢弃，不会保留在编译好的class文件里），如 @Override
@@ -1445,8 +1445,6 @@ Heap Dump 之后，可以查看以下内容：
 - 代码中保存对每个对象的引用。
 - 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
 
-=======
->>>>>>> 23045646445fab660d13ca8d656b3a5079d049c9:Docs/Android扩展知识点.md
 # LeakCanary
 ![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
 ## 初始化注册
