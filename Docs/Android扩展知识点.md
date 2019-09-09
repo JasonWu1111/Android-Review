@@ -1438,13 +1438,6 @@ public Class findClass(String name) {
 
 @Documented：是否会保存到 Javadoc 文档中
 
-# Heap Dump
-Heap Dump 之后，可以查看以下内容：
-- 应用分配了哪些类型的对象，以及每种对象的数量。
-- 每个对象使用多少内存。
-- 代码中保存对每个对象的引用。
-- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
-
 # LeakCanary
 ![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
 
