@@ -1447,6 +1447,7 @@ Heap Dump 之后，可以查看以下内容：
 
 # LeakCanary
 ![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
+
 ## 初始化注册
 在清单文件中注册了一个 ContentProvider 用于在应用启动时初始化代码：  
 
