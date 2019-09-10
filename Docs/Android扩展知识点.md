@@ -54,11 +54,11 @@ ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回
 |--|--
 | res | 包含所有没有被编译到 .arsc 里面的资源文件
 | lib | 引用库的文件夹
-| assets | assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等,通过AssetManager访问
-| META_INF | 存放的是签名信息，用来保证apk包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
-| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK里面，可能会存在多个dex文件
+| assets | assets文件夹相比于 res 文件夹，还有可能放字体文件、预置数据和web页面等,通过 AssetManager 访问
+| META_INF | 存放的是签名信息，用来保证 apk 包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
+| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK 里面，可能会存在多个 dex 文件
 | resources.arsc | 一些资源和标识符被编译和写入这个文件
-| Androidmanifest.xml | 编译时，应用程序的AndroidManifest.xml被转化成二进制格式
+| Androidmanifest.xml | 编译时，应用程序的 AndroidManifest.xml 被转化成二进制格式
 
 ## 整体优化
 - 分离应用的独立模块，以插件的形式加载
@@ -109,7 +109,7 @@ android {
 1、根据需求确定 要 hook 的对象  
 2、寻找要hook的对象的持有者，拿到要 hook 的对象  
 3、定义“要 hook 的对象”的代理类，并且创建该类的对象  
-4、使用上一步创建出来的对象，替换掉要hook的对象
+4、使用上一步创建出来的对象，替换掉要 hook 的对象
 
 ## 使用示例
 ```java
@@ -386,7 +386,7 @@ android {
 - usage.txt  
 列出从 APK 移除的代码。
 
-这些文件保存在 /build/outputs/mapping/release/ 中。我们可以查看 seeds.txt 里面是否是我们需要保留的，以及 usage.txt 里查看是否有误删除的代码。 mapping.txt 文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现 bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于/tools/proguard/ 目录中。该脚本利用 mapping.txt 文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
+这些文件保存在 /build/outputs/mapping/release/ 中。我们可以查看 seeds.txt 里面是否是我们需要保留的，以及 usage.txt 里查看是否有误删除的代码。 mapping.txt 文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现 bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于 /tools/proguard/ 目录中。该脚本利用 mapping.txt 文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
 
 ```shell
 retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
@@ -416,13 +416,13 @@ retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 
 总结：
 - 彻底解决了 MVC 中 View 和 Controller 傻傻分不清楚的问题
-- 但是随着业务逻辑的增加，一个页面可能会非常复杂，UI的改变是非常多，会有非常多的case，这样就会造成View的接口会很庞大
+- 但是随着业务逻辑的增加，一个页面可能会非常复杂，UI 的改变是非常多，会有非常多的 case，这样就会造成 View 的接口会很庞大
 - 更容易单元测试
 
 ## MVVM
 ![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCMygIDD6xo5djkq6Y3jZo53sT2A4kKNaz8JEVRwmUnTmcAwJm0pZVWg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 
-在 MVP 中 View 和 Presenter 要相互持有，方便调用对方，而在 MVP 中 View 和 ViewModel 通过 Binding进行关联，他们之前的关联处理通过 DataBinding 完成。
+在 MVP 中 View 和 Presenter 要相互持有，方便调用对方，而在 MVP 中 View 和 ViewModel 通过 Binding 进行关联，他们之前的关联处理通过  DataBinding 完成。
 
 总结：
 - 很好的解决了 MVC 和 MVP 的问题
