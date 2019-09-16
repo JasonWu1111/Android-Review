@@ -795,6 +795,11 @@ IPC 即 Inter-Process Communication (进程间通信)。Android 基于 Linux，�
 ## Binder
 Binder 是 Android 中的一个类，实现了 IBinder 接口。从 IPC 角度来说，Binder 是 Android 中的一种扩进程通信方方式。从 Android 应用层来说，Binder 是客户端和服务器端进行通信的媒介，当 bindService 的时候，服务端会返回一个包含了服务端业务调用的 Binder 对象。
 
+Binder 相较于传统 IPC 来说更适合于Android系统，具体原因的包括如下三点：
+- Binder 本身是 C/S 架构的，这一点更符合 Android 系统的架构
+- 性能上更有优势：管道，消息队列，Socket 的通讯都需要两次数据拷贝，而 Binder 只需要一次。要知道，对于系统底层的 IPC 形式，少一次数据拷贝，对整体性能的影响是非常之大的
+- 安全性更好：传统 IPC 形式，无法得到对方的身份标识（UID/GID)，而在使用 Binder IPC 时，这些身份标示是跟随调用过程而自动传递的。Server 端很容易就可以知道 Client 端的身份，非常便于做安全检查
+
 - **新建AIDL接口文件**
   
 ``RemoteService.aidl``
