@@ -820,48 +820,157 @@ public static void main(String args[]) {
 
 ``Proxy.java``
 ```java
-public static Object newProxyInstance(ClassLoader loader,
+public class Proxy implements java.io.Serializable {
+
+    // 代理类的缓存
+    private static final WeakCache<ClassLoader, Class<?>[], Class<?>>
+        proxyClassCache = new WeakCache<>(new KeyFactory(), new ProxyClassFactory());
+    ···
+
+    // 生成代理对象方法入口
+    public static Object newProxyInstance(ClassLoader loader,
                                         Class<?>[] interfaces,
                                         InvocationHandler h)
     throws IllegalArgumentException
-{
-    Objects.requireNonNull(h);
+    {
+        Objects.requireNonNull(h);
 
-    final Class<?>[] intfs = interfaces.clone();
-    /*
-        * Look up or generate the designated proxy class.
-        */
-    Class<?> cl = getProxyClass0(loader, intfs);
+        final Class<?>[] intfs = interfaces.clone();
+        // 找到并生成相关的代理类
+        Class<?> cl = getProxyClass0(loader, intfs);
 
-    /*
-        * Invoke its constructor with the designated invocation handler.
-        */
-    try {
-        final Constructor<?> cons = cl.getConstructor(constructorParams);
-        final InvocationHandler ih = h;
-        if (!Modifier.isPublic(cl.getModifiers())) {
-            cons.setAccessible(true);
-        }
-        return cons.newInstance(new Object[]{h});
-    } catch (IllegalAccessException|InstantiationException e) {
-        throw new InternalError(e.toString(), e);
-    } catch (InvocationTargetException e) {
-        Throwable t = e.getCause();
-        if (t instanceof RuntimeException) {
-            throw (RuntimeException) t;
-        } else {
-            throw new InternalError(t.toString(), t);
-        }
-    } catch (NoSuchMethodException e) {
-        throw new InternalError(e.toString(), e);
+        // 调用代理类的构造方法生成代理类实例
+        try {
+            final Constructor<?> cons = cl.getConstructor(constructorParams);
+            final InvocationHandler ih = h;
+            if (!Modifier.isPublic(cl.getModifiers())) {
+                cons.setAccessible(true);
+            }
+            return cons.newInstance(new Object[]{h});
+        } 
+        ···
     }
+    ···
+    
+    // 定义和返回代理类的工厂类
+    private static final class ProxyClassFactory
+        implements BiFunction<ClassLoader, Class<?>[], Class<?>>
+    {
+        // 所有代理类的前缀
+        private static final String proxyClassNamePrefix = "$Proxy";
+
+        //  用于生成唯一代理类名称的下一个数字
+        private static final AtomicLong nextUniqueNumber = new AtomicLong();
+
+        @Override
+        public Class<?> apply(ClassLoader loader, Class<?>[] interfaces) {
+
+            Map<Class<?>, Boolean> interfaceSet = new IdentityHashMap<>(interfaces.length);
+            ···
+
+            String proxyPkg = null;     // 用于定义代理类的包名
+            int accessFlags = Modifier.PUBLIC | Modifier.FINAL;
+
+            // 确保所有 non-public 的代理接口在相同的包里
+            for (Class<?> intf : interfaces) {
+                int flags = intf.getModifiers();
+                if (!Modifier.isPublic(flags)) {
+                    accessFlags = Modifier.FINAL;
+                    String name = intf.getName();
+                    int n = name.lastIndexOf('.');
+                    String pkg = ((n == -1) ? "" : name.substring(0, n + 1));
+                    if (proxyPkg == null) {
+                        proxyPkg = pkg;
+                    } else if (!pkg.equals(proxyPkg)) {
+                        throw new IllegalArgumentException(
+                            "non-public interfaces from different packages");
+                    }
+                }
+            }
+
+            if (proxyPkg == null) {
+                // 如果没有 non-public 的代理接口，使用默认的包名
+                proxyPkg = "";
+            }
+
+            {
+                List<Method> methods = getMethods(interfaces);
+                Collections.sort(methods, ORDER_BY_SIGNATURE_AND_SUBTYPE);
+                validateReturnTypes(methods);
+                List<Class<?>[]> exceptions = deduplicateAndGetExceptions(methods);
+
+                Method[] methodsArray = methods.toArray(new Method[methods.size()]);
+                Class<?>[][] exceptionsArray = exceptions.toArray(new Class<?>[exceptions.size()][]);
+
+                // 生成代理类的名称
+                long num = nextUniqueNumber.getAndIncrement();
+                String proxyName = proxyPkg + proxyClassNamePrefix + num;
+
+                // Android 特定修改：直接调用 native 方法生成代理类
+                return generateProxy(proxyName, interfaces, loader, methodsArray,
+                                     exceptionsArray);
+
+                // JDK 使用的 ProxyGenerator.generateProxyClas 方法创建代理类
+                byte[] proxyClassFile = ProxyGenerator.generateProxyClass(
+                    proxyName, interfaces, accessFlags);
+                try {
+                    return defineClass0(loader, proxyName,
+                                        proxyClassFile, 0, proxyClassFile.length);
+                } ···
+        }
+    }
+    ···
+
+    // 最终调用 native 方法生成代理类
+    @FastNative
+    private static native Class<?> generateProxy(String name, Class<?>[] interfaces,
+                                                 ClassLoader loader, Method[] methods,
+                                                 Class<?>[][] exceptions);
+
+}
+```
+
+``ProxyGenerator.java``
+```java
+public static byte[] generateProxyClass(final String name,
+                                        Class[] interfaces)
+{
+    ProxyGenerator gen = new ProxyGenerator(name, interfaces);
+    final byte[] classFile = gen.generateClassFile();
+
+    if (saveGeneratedFiles) {
+        java.security.AccessController.doPrivileged(
+        new java.security.PrivilegedAction<Void>() {
+            public Void run() {
+                try {
+                    FileOutputStream file =
+                        new FileOutputStream(dotToSlash(name) + ".class");
+                    file.write(classFile);
+                    file.close();
+                    return null;
+                } catch (IOException e) {
+                    throw new InternalError(
+                        "I/O exception saving generated file: " + e);
+                }
+            }
+        });
+    }
+
+    return classFile;
 }
 ```
 
 # 元注解
-| 注解 | 说明
-|--|--
-| @Retention | 保留的范围，**RetentionPolicy** 可选值有三种：<br>``SOURCE``：只在源码中可用<br>``CLASS``：在源码和字节码中可用<br>``RUNTIME``：在源码、字节码、运行时均可用
-| @Target | 可以用来修饰哪些程序元素，如 ``TYPE``, ``METHOD``, ``CONSTRUCTOR``, ``FIELD``, ``PARAMETER`` 等，未标注则表示可修饰所有
-| @Inherited | 是否可以被继承，默认为false  
-| @Documented | 是否会保存到 Javadoc 文档中
+@Retention：保留的范围，可选值有三种。
+
+| RetentionPolicy | 说明
+|----|----
+| SOURCE | 注解将被编译器丢弃（该类型的注解信息只会保留在源码里，源码经过编译后，注解信息会被丢弃，不会保留在编译好的class文件里），如 @Override
+| CLASS | 注解在class文件中可用，但会被 VM 丢弃（该类型的注解信息会保留在源码里和 class 文件里，在执行的时候，不会加载到虚拟机中），请注意，当注解未定义 Retention 值时，默认值是 CLASS。
+| RUNTIME | 注解信息将在运行期 (JVM) 也保留，因此可以通过反射机制读取注解的信息（源码、class 文件和执行的时候都有注解的信息），如 @Deprecated
+
+@Target：可以用来修饰哪些程序元素，如 TYPE, METHOD, CONSTRUCTOR, FIELD, PARAMETER等，未标注则表示可修饰所有
+
+@Inherited：是否可以被继承，默认为false  
+
+@Documented：是否会保存到 Javadoc 文档中

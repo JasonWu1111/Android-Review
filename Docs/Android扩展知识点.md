@@ -54,11 +54,11 @@ ART GC 与 Dalvik 的另一个主要区别在于 ART GC 引入了移动垃圾回
 |--|--
 | res | 包含所有没有被编译到 .arsc 里面的资源文件
 | lib | 引用库的文件夹
-| assets | assets文件夹相比于res文件夹，还有可能放字体文件、预置数据和web页面等,通过AssetManager访问
-| META_INF | 存放的是签名信息，用来保证apk包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
-| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK里面，可能会存在多个dex文件
+| assets | assets文件夹相比于 res 文件夹，还有可能放字体文件、预置数据和web页面等,通过 AssetManager 访问
+| META_INF | 存放的是签名信息，用来保证 apk 包的完整性和系统的安全。在生成一个APK的时候，会对所有的打包文件做一个校验计算，并把结果放在该目录下面
+| classes.dex | 包含编译后的应用程序源码转化成的dex字节码。APK 里面，可能会存在多个 dex 文件
 | resources.arsc | 一些资源和标识符被编译和写入这个文件
-| Androidmanifest.xml | 编译时，应用程序的AndroidManifest.xml被转化成二进制格式
+| Androidmanifest.xml | 编译时，应用程序的 AndroidManifest.xml 被转化成二进制格式
 
 ## 整体优化
 - 分离应用的独立模块，以插件的形式加载
@@ -109,7 +109,7 @@ android {
 1、根据需求确定 要 hook 的对象  
 2、寻找要hook的对象的持有者，拿到要 hook 的对象  
 3、定义“要 hook 的对象”的代理类，并且创建该类的对象  
-4、使用上一步创建出来的对象，替换掉要hook的对象
+4、使用上一步创建出来的对象，替换掉要 hook 的对象
 
 ## 使用示例
 ```java
@@ -386,7 +386,7 @@ android {
 - usage.txt  
 列出从 APK 移除的代码。
 
-这些文件保存在 /build/outputs/mapping/release/ 中。我们可以查看 seeds.txt 里面是否是我们需要保留的，以及 usage.txt 里查看是否有误删除的代码。 mapping.txt 文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现 bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于/tools/proguard/ 目录中。该脚本利用 mapping.txt 文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
+这些文件保存在 /build/outputs/mapping/release/ 中。我们可以查看 seeds.txt 里面是否是我们需要保留的，以及 usage.txt 里查看是否有误删除的代码。 mapping.txt 文件很重要，由于我们的部分代码是经过重命名的，如果该部分出现 bug，对应的异常堆栈信息里的类或成员也是经过重命名的，难以定位问题。我们可以用 retrace 脚本（在 Windows 上为 retrace.bat；在 Mac/Linux 上为 retrace.sh）。它位于 /tools/proguard/ 目录中。该脚本利用 mapping.txt 文件和你的异常堆栈文件生成没有经过混淆的异常堆栈文件,这样就可以看清是哪里出问题了。使用 retrace 工具的语法如下：
 
 ```shell
 retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
@@ -416,13 +416,13 @@ retrace.bat|retrace.sh [-verbose] mapping.txt [<stacktrace_file>]
 
 总结：
 - 彻底解决了 MVC 中 View 和 Controller 傻傻分不清楚的问题
-- 但是随着业务逻辑的增加，一个页面可能会非常复杂，UI的改变是非常多，会有非常多的case，这样就会造成View的接口会很庞大
+- 但是随着业务逻辑的增加，一个页面可能会非常复杂，UI 的改变是非常多，会有非常多的 case，这样就会造成 View 的接口会很庞大
 - 更容易单元测试
 
 ## MVVM
 ![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3Wy5xbLTp6JMMdouZiavFxyYCMygIDD6xo5djkq6Y3jZo53sT2A4kKNaz8JEVRwmUnTmcAwJm0pZVWg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 
-在 MVP 中 View 和 Presenter 要相互持有，方便调用对方，而在 MVP 中 View 和 ViewModel 通过 Binding进行关联，他们之前的关联处理通过 DataBinding 完成。
+在 MVP 中 View 和 Presenter 要相互持有，方便调用对方，而在 MVP 中 View 和 ViewModel 通过 Binding 进行关联，他们之前的关联处理通过  DataBinding 完成。
 
 总结：
 - 很好的解决了 MVC 和 MVP 的问题
@@ -1498,238 +1498,4 @@ public Class findClass(String name) {
 }
 ···
 ```
-
-<<<<<<< HEAD:Android扩展知识点.md
-# 注解
-## Java元注解
-@Retention：保留的范围，可选值有三种。
-| RetentionPolicy | 说明
-|----|----
-| SOURCE | 注解将被编译器丢弃（该类型的注解信息只会保留在源码里，源码经过编译后，注解信息会被丢弃，不会保留在编译好的class文件里），如 @Override
-| CLASS | 注解在class文件中可用，但会被 VM 丢弃（该类型的注解信息会保留在源码里和 class 文件里，在执行的时候，不会加载到虚拟机中），请注意，当注解未定义 Retention 值时，默认值是 CLASS。
-| RUNTIME | 注解信息将在运行期 (JVM) 也保留，因此可以通过反射机制读取注解的信息（源码、class 文件和执行的时候都有注解的信息），如 @Deprecated
-
-@Target：可以用来修饰哪些程序元素，如 TYPE, METHOD, CONSTRUCTOR, FIELD, PARAMETER等，未标注则表示可修饰所有
-
-@Inherited：是否可以被继承，默认为false  
-
-@Documented：是否会保存到 Javadoc 文档中
-
-# Heap Dump
-Heap Dump 之后，可以查看以下内容：
-- 应用分配了哪些类型的对象，以及每种对象的数量。
-- 每个对象使用多少内存。
-- 代码中保存对每个对象的引用。
-- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
-
-=======
->>>>>>> 23045646445fab660d13ca8d656b3a5079d049c9:Docs/Android扩展知识点.md
-# LeakCanary
-![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
-## 初始化注册
-在清单文件中注册了一个 ContentProvider 用于在应用启动时初始化代码：  
-
-``leakcanary-leaksentry/*/AndroidManifest.xml``
-```xml
-···
-    <application>
-        <provider
-            android:name="leakcanary.internal.LeakSentryInstaller"
-            android:authorities="${applicationId}.leak-sentry-installer"
-            android:exported="false"/>
-    </application>
-···
-```
-
-在 LeakSentryInstaller 生命周期 ``onCreate()`` 方法中完成初始化步骤：
-
-``LeakSentryInstaller.kt``
-```kotlin
-internal class LeakSentryInstaller : ContentProvider() {
-
-    override fun onCreate(): Boolean {
-        CanaryLog.logger = DefaultCanaryLog()
-        val application = context!!.applicationContext as Application
-        InternalLeakSentry.install(application)
-        return true
-    }
-···
-```
-
-然后分别注册 Activity/Fragment 的监听：
-
-``InternalLeakSentry.kt``
-```kotlin
-···
-    fun install(application: Application) {
-        CanaryLog.d("Installing LeakSentry")
-        checkMainThread()
-        if (this::application.isInitialized) {
-        return
-        }
-        InternalLeakSentry.application = application
-
-        val configProvider = { LeakSentry.config }
-        ActivityDestroyWatcher.install(
-            application, refWatcher, configProvider
-        )
-        FragmentDestroyWatcher.install(
-            application, refWatcher, configProvider
-        )
-        listener.onLeakSentryInstalled(application)
-    }
-···
-```
-``ActivityDestroyWatcher.kt``
-```kotlin
-···
-    fun install(application: Application,refWatcher: RefWatcher,configProvider: () -> Config
-        ) {
-            val activityDestroyWatcher = ActivityDestroyWatcher(refWatcher, configProvider)
-            application.registerActivityLifecycleCallbacks(activityDestroyWatcher.lifecycleCallbacks)
-        }
-    }
-···
-```
-``AndroidOFragmentDestroyWatcher.kt``
-```kotlin
-···
-    override fun watchFragments(activity: Activity) {
-        val fragmentManager = activity.fragmentManager
-        fragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, true)
-    }
-···
-```
-``AndroidXFragmentDestroyWatcher.kt``
-```kotlin
-···
-    override fun watchFragments(activity: Activity) {
-        if (activity is FragmentActivity) {
-        val supportFragmentManager = activity.supportFragmentManager
-        supportFragmentManager.registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, true)
-        }
-    }
-···
-```
-
-## 引用泄漏观察
-``RefWatcher.kt``
-```kotlin
-···
-    @Synchronized fun watch(watchedInstance: Any, name: String) {
-        if (!isEnabled()) {
-            return
-        }
-        removeWeaklyReachableInstances()
-        val key = UUID.randomUUID().toString()
-        val watchUptimeMillis = clock.uptimeMillis()
-        val reference = KeyedWeakReference(watchedInstance, key, name, watchUptimeMillis, queue)
-        CanaryLog.d(
-            "Watching %s with key %s",
-            ((if (watchedInstance is Class<*>) watchedInstance.toString() else "instance of ${watchedInstance.javaClass.name}") + if (name.isNotEmpty()) " named $name" else ""), key
-        )
-
-        watchedInstances[key] = reference
-        checkRetainedExecutor.execute {
-            moveToRetained(key)
-        }
-    }
-
-    @Synchronized private fun moveToRetained(key: String) {
-        removeWeaklyReachableInstances()
-        val retainedRef = watchedInstances[key]
-        if (retainedRef != null) {
-            retainedRef.retainedUptimeMillis = clock.uptimeMillis()
-            onInstanceRetained()
-        }
-    }
-···
-```
-
-``InternalLeakCanary.kt``
-```kotlin
-···
-    override fun onReferenceRetained() {
-        if (this::heapDumpTrigger.isInitialized) {
-            heapDumpTrigger.onReferenceRetained()
-        }
-    }
-···
-```
-
-## Dump Heap
-发现泄漏之后，获取 Heamp Dump 相关文件：
-
-``AndroidHeapDumper.kt``
-```kotlin
-···
-    override fun dumpHeap(): File? {
-        val heapDumpFile = leakDirectoryProvider.newHeapDumpFile() ?: return null
-        ···
-        return try {
-            Debug.dumpHprofData(heapDumpFile.absolutePath)
-            if (heapDumpFile.length() == 0L) {
-                CanaryLog.d("Dumped heap file is 0 byte length")
-                null
-            } else {
-                heapDumpFile
-            }
-        } catch (e: Exception) {
-            CanaryLog.d(e, "Could not dump heap")
-            // Abort heap dump
-            null
-        } finally {
-            cancelToast(toast)
-            notificationManager.cancel(R.id.leak_canary_notification_dumping_heap)
-        }
-    }
-···
-```
-
-``HeapDumpTrigger.kt``
-```kotlin
-···
-    private fun checkRetainedInstances(reason: String) {
-        ···
-        val heapDumpFile = heapDumper.dumpHeap()
-        ···
-        lastDisplayedRetainedInstanceCount = 0
-        refWatcher.removeInstancesWatchedBeforeHeapDump(heapDumpUptimeMillis)
-
-        HeapAnalyzerService.runAnalysis(application, heapDumpFile)
-    }
-···
-```
-
-启动一个 HeapAnalyzerService 来分析 heapDumpFile：
-
-``HeapAnalyzerService.kt``
-```kotlin
-···
-    override fun onHandleIntentInForeground(intent: Intent?) {
-        ···
-        val heapAnalyzer = HeapAnalyzer(this)
-        val config = LeakCanary.config
-
-        val heapAnalysis =
-        heapAnalyzer.checkForLeaks(
-            heapDumpFile, config.referenceMatchers, config.computeRetainedHeapSize, config.objectInspectors,
-            if (config.useExperimentalLeakFinders) config.objectInspectors else listOf(
-                AndroidObjectInspectors.KEYED_WEAK_REFERENCE
-            )
-        )
-
-        config.analysisResultListener(application, heapAnalysis)
-    }
-···
-```
-
->Heap Dump 之后，可以查看以下内容：
->- 应用分配了哪些类型的对象，以及每种对象的数量。
->- 每个对象使用多少内存。
->- 代码中保存对每个对象的引用。
->- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
-
-<!-- # Glide
-![](https://raw.githubusercontent.com/JsonChao/Awesome-Third-Library-Source-Analysis/master/ScreenShots/Glide%E6%A1%86%E6%9E%B6%E5%9B%BE.jpg) -->
 
