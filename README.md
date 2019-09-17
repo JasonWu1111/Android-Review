@@ -225,10 +225,10 @@
    * [类加载器](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#类加载器)
       * [双亲委托模式](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#双亲委托模式)
       * [DexPathList](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#dexpathlist)
-   * [LeakCanary](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#leakcanary)
-      * [初始化注册](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#初始化注册)
-      * [引用泄漏观察](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#引用泄漏观察)
-      * [Dump Heap](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#dump-heap)
+   * [LeakCanary](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#leakcanary)
+      * [初始化注册](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#初始化注册)
+      * [引用泄漏观察](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#引用泄漏观察)
+      * [Dump Heap](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#dump-heap)
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/常见面试算法题汇总.md#排序)
