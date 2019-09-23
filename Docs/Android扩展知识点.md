@@ -1386,15 +1386,61 @@ Okhttp 支持配置使用 Http 2.0 协议，Http2.0 相对于 Http1.x 来说提�
 ## TCP/IP
 IP（Internet Protocol）协议提供了主机和主机间的通信，为了完成不同主机的通信，我们需要某种方式来唯一标识一台主机，这个标识，就是著名的 IP 地址。通过IP地址，IP 协议就能够帮我们把一个数据包发送给对方。
 
-TCP 的全称是 Transmission Control Protocol，TCP 协议在 IP 协议提供的主机间通信功能的基础上，完成这两个主机上进程对进程的通信，通信双方需要先经过一个**三次握手**过程：
+TCP 的全称是 Transmission Control Protocol，TCP 协议在 IP 协议提供的主机间通信功能的基础上，完成这两个主机上进程对进程的通信。
 
-![](https://mmbiz.qpic.cn/mmbiz_png/zKFJDM5V3WyBBhtrBTSq6HiacQjdDkhnn18dMxN6FlgzJUPG38vzgcHmWHIPBOE2LYSVw9En5beP8W5HQ68BdzQ/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
+### 三次握手
+所谓三次握手(Three-way Handshake)，是指建立一个 TCP 连接时，需要客户端和服务器总共发送3个包。
 
-- 首先，客户向服务端发送一个 SYN，假设此时 sequence number 为 x。这个 x 是由操作系统根据一定的规则生成的，不妨认为它是一个随机数。
+三次握手的目的是连接服务器指定端口，建立 TCP 连接，并同步连接双方的序列号和确认号，交换 TCP 窗口大小信息。在 socket 编程中，客户端执行 connect() 时。将触发三次握手。
 
-- 服务端收到 SYN 后，会向客户端再发送一个 SYN，此时服务器的 seq number = y。与此同时，会 ACK x+1，告诉客户端“已经收到了 SYN，可以发送数据了”。
+![](https://raw.githubusercontent.com/HIT-Alibaba/interview/master/img/tcp-connection-made-three-way-handshake.png)
 
-- 客户端收到服务器的 SYN 后，回复一个 ACK y+1，这个 ACK 则是告诉服务器，SYN 已经收到，服务器可以发送数据了。
+- 第一次握手(SYN=1, seq=x):
+
+客户端发送一个 TCP 的 SYN 标志位置 1 的包，指明客户端打算连接的服务器的端口，以及初始序号 X，保存在包头的序列号 (Sequence Number) 字段里。
+
+发送完毕后，客户端进入 ``SYN_SEND`` 状态。
+
+- 第二次握手(SYN=1, ACK=1, seq=y, ACKnum=x+1):
+
+服务器发回确认包(ACK)应答。即 SYN 标志位和 ACK 标志位均为 1。服务器端选择自己 ISN 序列号，放到 Seq 域里，同时将确认序号(Acknowledgement Number)设置为客户的 ISN 加1，即 X+1。 发送完毕后，服务器端进入 ``SYN_RCVD`` 状态。
+
+- 第三次握手(ACK=1，ACKnum=y+1)
+
+客户端再次发送确认包(ACK)，SYN 标志位为 0，ACK 标志位为 1，并且把服务器发来 ACK 的序号字段 +1，放在确定字段中发送给对方，并且在数据段放写 ISN 的 +1
+
+发送完毕后，客户端进入 ESTABLISHED 状态，当服务器端接收到这个包时，也进入 ESTABLISHED 状态，TCP 握手结束。
+
+### 四次挥手
+TCP 的连接的拆除需要发送四个包，因此称为四次挥手(Four-way handshake)，也叫做改进的三次握手。客户端或服务器均可主动发起挥手动作，在 socket 编程中，任何一方执行 close() 操作即可产生挥手操作。
+
+![](https://raw.githubusercontent.com/HIT-Alibaba/interview/master/img/tcp-connection-closed-four-way-handshake.png)
+
+- 第一次挥手(FIN=1，seq=x)
+
+假设客户端想要关闭连接，客户端发送一个 FIN 标志位置为1的包，表示自己已经没有数据可以发送了，但是仍然可以接受数据。
+
+发送完毕后，客户端进入 FIN_WAIT_1 状态。
+
+- 第二次挥手(ACK=1，ACKnum=x+1)
+
+服务器端确认客户端的 FIN 包，发送一个确认包，表明自己接受到了客户端关闭连接的请求，但还没有准备好关闭连接。
+
+发送完毕后，服务器端进入 CLOSE_WAIT 状态，客户端接收到这个确认包之后，进入 FIN_WAIT_2 状态，等待服务器端关闭连接。
+
+- 第三次挥手(FIN=1，seq=y)
+
+服务器端准备好关闭连接时，向客户端发送结束连接请求，FIN 置为1。
+
+发送完毕后，服务器端进入 LAST_ACK 状态，等待来自客户端的最后一个ACK。
+
+- 第四次挥手(ACK=1，ACKnum=y+1)
+
+客户端接收到来自服务器端的关闭请求，发送一个确认包，并进入 TIME_WAIT状态，等待可能出现的要求重传的 ACK 包。
+
+服务器端接收到这个确认包之后，关闭连接，进入 CLOSED 状态。
+
+客户端等待了某个固定时间（两个最大段生命周期，2MSL，2 Maximum Segment Lifetime）之后，没有收到服务器端的 ACK ，认为服务器端已经正常关闭连接，于是自己也关闭连接，进入 CLOSED 状态。
 
 ### TCP 与 UDP 的区别
 | 区别点    | TCP      | UDP    |
