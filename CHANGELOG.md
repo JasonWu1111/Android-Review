@@ -1,4 +1,16 @@
 # Change Log
+## 更新至 2019-09-19
+- 更新 [TCP/IP](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#tcpip)
+
+## 更新至 2019-09-16
+- 更新 [Binder](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android知识点汇总.md#binder)
+
+## 更新至 2019-09-13
+- 更新 [动态代理](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#动态代理)
+  
+## 更新至 2019-09-7
+- 更新 [Java 元注解](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#元注解)
+  
 ## 更新至 2019-09-03
 - 新增 [ConcurrentHashMap](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#concurrenthashmap)
 - 新增 [ArrayList](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#arraylist)
