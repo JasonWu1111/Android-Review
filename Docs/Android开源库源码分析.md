@@ -205,5 +205,182 @@ internal class LeakSentryInstaller : ContentProvider() {
 >- 代码中保存对每个对象的引用。
 >- 分配对象的调用堆栈。（调用堆栈当前仅在使用Android 7.1及以下时有效。）
 
+# EventBus
+## 自定义注解
+- 申明注解类
+```java
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface Subscribe {
+    // 线程模式
+    ThreadMode threadMode() default ThreadMode.POSTING;
+
+    // 是否为粘性事件
+    boolean sticky() default false;
+
+    // 事件的优先级
+    int priority() default 0;
+}
+```
+
+- 注册订阅事件
+```java
+@Subscribe(threadMode = ThreadMode.MAIN, priority = 1, sticky = true)
+public void onEventMainThreadP1(IntTestEvent event) {
+    handleEvent(1, event);
+}
+```
+
+## 注册订阅者
+```java
+EventBus.getDefault().register(object);
+```
+
+``Eventbus.java``
+```java
+public void register(Object subscriber) {
+    Class<?> subscriberClass = subscriber.getClass();
+    List<SubscriberMethod> subscriberMethods = subscriberMethodFinder.findSubscriberMethods(subscriberClass);
+    synchronized (this) {
+        for (SubscriberMethod subscriberMethod : subscriberMethods) {
+            subscribe(subscriber, subscriberMethod);
+        }
+    }
+}
+```
+
+- 通过反射查找订阅者类里的订阅事件，添加到 ``METHOD_CACHE`` 中
+  
+``SubscriberMethodFinder.java``
+```java
+private static final Map<Class<?>, List<SubscriberMethod>> METHOD_CACHE = new ConcurrentHashMap<>();
+···
+
+List<SubscriberMethod> findSubscriberMethods(Class<?> subscriberClass) {
+    List<SubscriberMethod> subscriberMethods = METHOD_CACHE.get(subscriberClass);
+    if (subscriberMethods != null) {
+        return subscriberMethods;
+    }
+
+    if (ignoreGeneratedIndex) {
+        subscriberMethods = findUsingReflection(subscriberClass);
+    } else {
+        subscriberMethods = findUsingInfo(subscriberClass);
+    }
+    if (subscriberMethods.isEmpty()) {
+        throw new EventBusException("Subscriber " + subscriberClass
+                + " and its super classes have no public methods with the @Subscribe annotation");
+    } else {
+        METHOD_CACHE.put(subscriberClass, subscriberMethods);
+        return subscriberMethods;
+    }
+}
+···
+
+private void findUsingReflectionInSingleClass(FindState findState) {
+    Method[] methods;
+    try {
+        // This is faster than getMethods, especially when subscribers are fat classes like Activities
+        methods = findState.clazz.getDeclaredMethods();
+    } catch (Throwable th) {
+        // Workaround for java.lang.NoClassDefFoundError, see https://github.com/greenrobot/EventBus/issues/149
+        methods = findState.clazz.getMethods();
+        findState.skipSuperClasses = true;
+    }
+    for (Method method : methods) {
+        int modifiers = method.getModifiers();
+        if ((modifiers & Modifier.PUBLIC) != 0 && (modifiers & MODIFIERS_IGNORE) == 0) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            if (parameterTypes.length == 1) {
+                Subscribe subscribeAnnotation = method.getAnnotation(Subscribe.class);
+                if (subscribeAnnotation != null) {
+                    Class<?> eventType = parameterTypes[0];
+                    if (findState.checkAdd(method, eventType)) {
+                        ThreadMode threadMode = subscribeAnnotation.threadMode();
+                        findState.subscriberMethods.add(new SubscriberMethod(method, eventType, threadMode,
+                                subscribeAnnotation.priority(), subscribeAnnotation.sticky()));
+                    }
+                }
+            } else if (strictMethodVerification && method.isAnnotationPresent(Subscribe.class)) {
+                String methodName = method.getDeclaringClass().getName() + "." + method.getName();
+                throw new EventBusException("@Subscribe method " + methodName +
+                        "must have exactly 1 parameter but has " + parameterTypes.length);
+            }
+        } else if (strictMethodVerification && method.isAnnotationPresent(Subscribe.class)) {
+            String methodName = method.getDeclaringClass().getName() + "." + method.getName();
+            throw new EventBusException(methodName +
+                    " is a illegal @Subscribe method: must be public, non-static, and non-abstract");
+        }
+    }
+}
+```
+
+## 发送事件
+```java
+EventBus.getDefault().post(object);
+```
+
+- 根据事件类型获取到对应的订阅者信息
+
+``Subscription.java``
+```java
+final class Subscription {
+    final Object subscriber;
+    final SubscriberMethod subscriberMethod;
+    ···
+}
+```
+
+``EventBus.java``
+```java
+private final Map<Class<?>, CopyOnWriteArrayList<Subscription>> subscriptionsByEventType;
+···
+
+private boolean postSingleEventForEventType(Object event, PostingThreadState postingState, Class<?> eventClass) {
+    CopyOnWriteArrayList<Subscription> subscriptions;
+    synchronized (this) {
+        subscriptions = subscriptionsByEventType.get(eventClass);
+    }
+    if (subscriptions != null && !subscriptions.isEmpty()) {
+        for (Subscription subscription : subscriptions) {
+            postingState.event = event;
+            postingState.subscription = subscription;
+            boolean aborted = false;
+            try {
+                postToSubscription(subscription, event, postingState.isMainThread);
+                aborted = postingState.canceled;
+            } finally {
+                postingState.event = null;
+                postingState.subscription = null;
+                postingState.canceled = false;
+            }
+            if (aborted) {
+                break;
+            }
+        }
+        return true;
+    }
+    return false;
+}
+···
+```
+
+- 根据注册已获得的 ``Method`` 对象调用相关注册方法
+
+``EventBus.java``
+
+```java
+void invokeSubscriber(Subscription subscription, Object event) {
+    try {
+        subscription.subscriberMethod.method.invoke(subscription.subscriber, event);
+    } catch (InvocationTargetException e) {
+        handleSubscriberException(subscription, event, e.getCause());
+    } catch (IllegalAccessException e) {
+        throw new IllegalStateException("Unexpected exception", e);
+    }
+}
+```
+
 <!-- # Glide
 ![](https://raw.githubusercontent.com/JsonChao/Awesome-Third-Library-Source-Analysis/master/ScreenShots/Glide%E6%A1%86%E6%9E%B6%E5%9B%BE.jpg) -->
