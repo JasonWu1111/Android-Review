@@ -1,4 +1,7 @@
 # Change Log
+## 更新至 2019-09-28
+- 新增 [EventBus](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#eventbus)
+
 ## 更新至 2019-09-19
 - 更新 [TCP/IP](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android扩展知识点.md#tcpip)
 

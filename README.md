@@ -232,6 +232,10 @@
       * [初始化注册](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#初始化注册)
       * [引用泄漏观察](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#引用泄漏观察)
       * [Dump Heap](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#dump-heap)
+   * [EventBus](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#eventbus)
+      * [自定义注解](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#自定义注解) 
+      * [注册订阅者](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#注册订阅者) 
+      * [发送事件](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#发送事件) 
 
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/常见面试算法题汇总.md#排序)
