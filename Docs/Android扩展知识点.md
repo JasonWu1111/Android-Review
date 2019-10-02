@@ -1202,7 +1202,8 @@ Java_com_example_myjniproject_MainActivity_getJobId(JNIEnv *env, jobject thiz, j
 }
 ```
 
-## NDK 开发流程
+## NDK 开发
+### 基础开发流程
 - 在 java 中声明 native 方法
 ```java
 public class MainActivity extends AppCompatActivity {
@@ -1246,6 +1247,162 @@ Java_com_example_myjniproject_MainActivity_stringFromJNI(
 >- JNIEXPORT 和 JNICALL：JNI 所定义的宏，可以在 jni.h 头文件中查找到
 
 - 通过 CMake 或者 ndk-build 构建动态库
+
+### System.loadLibrary()
+``java/lang/System.java``:
+```java
+@CallerSensitive
+public static void load(String filename) {
+    Runtime.getRuntime().load0(Reflection.getCallerClass(), filename);
+}
+```
+
+- 调用 ``Runtime`` 相关 native 方法
+
+``java/lang/Runtime.java``:
+```java
+private static native String nativeLoad(String filename, ClassLoader loader, Class<?> caller);
+```
+
+- native 方法的实现如下：
+
+``dalvik/vm/native/java_lang_Runtime.cpp``:
+```cpp
+static void Dalvik_java_lang_Runtime_nativeLoad(const u4* args,
+    JValue* pResult)
+{
+    ···
+    bool success;
+
+    assert(fileNameObj != NULL);
+    // 将 Java 的 library path String 转换到 native 的 String
+    fileName = dvmCreateCstrFromString(fileNameObj);
+
+    success = dvmLoadNativeCode(fileName, classLoader, &reason);
+    if (!success) {
+        const char* msg = (reason != NULL) ? reason : "unknown failure";
+        result = dvmCreateStringFromCstr(msg);
+        dvmReleaseTrackedAlloc((Object*) result, NULL);
+    }
+    ···
+}
+```
+
+- ``dvmLoadNativeCode`` 函数实现如下：
+
+``dalvik/vm/Native.cpp``
+```cpp
+bool dvmLoadNativeCode(const char* pathName, Object* classLoader,
+        char** detail)
+{
+    SharedLib* pEntry;
+    void* handle;
+    ···
+    *detail = NULL;
+
+    // 如果已经加载过了，则直接返回 true
+    pEntry = findSharedLibEntry(pathName);
+    if (pEntry != NULL) {
+        if (pEntry->classLoader != classLoader) {
+            ···
+            return false;
+        }
+        ···
+        if (!checkOnLoadResult(pEntry))
+            return false;
+        return true;
+    }
+
+    Thread* self = dvmThreadSelf();
+    ThreadStatus oldStatus = dvmChangeStatus(self, THREAD_VMWAIT);
+    // 把.so mmap 到进程空间，并把 func 等相关信息填充到 soinfo 中
+    handle = dlopen(pathName, RTLD_LAZY);
+    dvmChangeStatus(self, oldStatus);
+    ···
+    // 创建一个新的 entry
+    SharedLib* pNewEntry;
+    pNewEntry = (SharedLib*) calloc(1, sizeof(SharedLib));
+    pNewEntry->pathName = strdup(pathName);
+    pNewEntry->handle = handle;
+    pNewEntry->classLoader = classLoader;
+    dvmInitMutex(&pNewEntry->onLoadLock);
+    pthread_cond_init(&pNewEntry->onLoadCond, NULL);
+    pNewEntry->onLoadThreadId = self->threadId;
+
+    // 尝试添加到列表中
+    SharedLib* pActualEntry = addSharedLibEntry(pNewEntry);
+
+    if (pNewEntry != pActualEntry) {
+        ···
+        freeSharedLibEntry(pNewEntry);
+        return checkOnLoadResult(pActualEntry);
+    } else {
+        ···
+        bool result = true;
+        void* vonLoad;
+        int version;
+        // 调用该 so 库的 JNI_OnLoad 方法
+        vonLoad = dlsym(handle, "JNI_OnLoad");
+        if (vonLoad == NULL) {
+            ···
+        } else {
+            // 调用 JNI_Onload 方法，重写类加载器。
+            OnLoadFunc func = (OnLoadFunc)vonLoad;
+            Object* prevOverride = self->classLoaderOverride;
+
+            self->classLoaderOverride = classLoader;
+            oldStatus = dvmChangeStatus(self, THREAD_NATIVE);
+            ···
+            version = (*func)(gDvmJni.jniVm, NULL);
+            dvmChangeStatus(self, oldStatus);
+            self->classLoaderOverride = prevOverride;
+
+            if (version != JNI_VERSION_1_2 && version != JNI_VERSION_1_4 &&
+                version != JNI_VERSION_1_6)
+            {
+                ···
+                result = false;
+            } else {
+                ···
+            }
+        }
+
+        if (result)
+            pNewEntry->onLoadResult = kOnLoadOkay;
+        else
+            pNewEntry->onLoadResult = kOnLoadFailed;
+
+        pNewEntry->onLoadThreadId = 0;
+
+        // 释放锁资源 
+        dvmLockMutex(&pNewEntry->onLoadLock);
+        pthread_cond_broadcast(&pNewEntry->onLoadCond);
+        dvmUnlockMutex(&pNewEntry->onLoadLock);
+        return result;
+    }
+}
+```
+
+<!-- ### native 方法调用原理
+- 虚拟机调用一个方法时，发现如果这是一个 native 方法，则使用 Method 对象中的nativeFunc 函数指针对象调用。
+
+``dalvik2/vm/interp/Stack.cpp``:
+```cpp
+Object* dvmInvokeMethod(Object* obj, const Method* method,
+    ArrayObject* argList, ArrayObject* params, ClassObject* returnType,
+    bool noAccessCheck)
+{
+    ···
+    if (dvmIsNativeMethod(method)) {
+        TRACE_METHOD_ENTER(self, method);
+        (*method->nativeFunc)((u4*)self->interpSave.curFrame, &retval, method, self);
+        TRACE_METHOD_EXIT(self, method);
+    } else {
+        dvmInterpret(self, method, &retval);
+    }
+    ···
+}
+``` -->
 
 ## CMake 构建 NDK 项目
 > CMake 是一个开源的跨平台工具系列，旨在构建，测试和打包软件，从 Android Studio 2.2 开始，Android Sudio 默认地使用 CMake 与 Gradle 搭配使用来构建原生库。
