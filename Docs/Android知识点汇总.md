@@ -928,6 +928,12 @@ public interface IRemoteService extends android.os.IInterface {
 | asBinder | 用于返回当前 Binder 对象
 | onTransact | 运行在服务端中的 Binder 线程池中，远程请求会通过系统底层封装后交由此方法来处理
 
+| 定向 tag | 含义
+|--|--
+| in | 数据只能由客户端流向服务端，服务端将会收到客户端对象的完整数据，客户端对象不会因为服务端对传参的修改而发生变动。
+| out | 数据只能由服务端流向客户端，服务端将会收到客户端对象，该对象不为空，但是它里面的字段为空，但是在服务端对该对象作任何修改之后客户端的传参对象都会同步改动。
+| inout | 服务端将会接收到客户端传来对象的完整信息，并且客户端将会同步服务端对该对象的任何变动。
+
 ## AIDL 通信
 Android Interface Definition Language
 
