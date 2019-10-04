@@ -1,4 +1,7 @@
 # Change Log
+## 更新至 2019-10-03
+- 更新 [AIDL](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#aidl-%E9%80%9A%E4%BF%A1)
+
 ## 更新至 2019-09-28
 - 新增 [EventBus](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android开源库源码分析.md#eventbus)
 
@@ -11,7 +14,7 @@
 ## 更新至 2019-09-13
 - 更新 [动态代理](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#动态代理)
   
-## 更新至 2019-09-7
+## 更新至 2019-09-07
 - 更新 [Java 元注解](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Java知识点汇总.md#元注解)
   
 ## 更新至 2019-09-03
