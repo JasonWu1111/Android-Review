@@ -1,4 +1,7 @@
 # Change Log
+## 更新至 2019-10-21
+- 新增 [依赖项配置](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Gradle知识点汇总.md#依赖项配置)
+  
 ## 更新至 2019-10-03
 - 更新 [AIDL](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Android%E7%9F%A5%E8%AF%86%E7%82%B9%E6%B1%87%E6%80%BB.md#aidl-%E9%80%9A%E4%BF%A1)
 

@@ -240,6 +240,9 @@
    * [策略模式](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/设计模式汇总.md#策略模式)
    * [备忘录模式](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/设计模式汇总.md#备忘录模式)
 
+## Gradle知识点汇总
+   * [依赖项配置](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/Gradle知识点汇总.md#依赖项配置)
+
 ## 常见面试算法题汇总
    * [排序](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/常见面试算法题汇总.md#排序)
       * [比较排序](https://github.com/JasonWu1111/Android-Review/blob/master/Docs/常见面试算法题汇总.md#比较排序)
