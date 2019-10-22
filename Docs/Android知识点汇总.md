@@ -365,10 +365,10 @@ MeasureSpec表示的是一个32位的整形值，它的高2位表示测量模式
 protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
     super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     int widthSpecMode = MeasureSpec.getMode(widthMeasureSpec);
-    int widtuhSpecSize = MeasureSpec.getSize(widthMeasureSpec);
+    int widthSpecSize = MeasureSpec.getSize(widthMeasureSpec);
     int heightSpecMode = MeasureSpec.getMode(heightMeasureSpec);
     int heightSpecSize = MeasureSpec.getSize(heightMeasureSpec);
-    // 在wrap_content的情况下指定内部宽/高(mWidth和mHeight)
+    // 在 wrap_content 的情况下指定内部宽/高(mWidth 和 mHeight`)
     if (widthSpecMode == MeasureSpec.AT_MOST && heightSpecMode == MeasureSpec.AT_MOST) {
         setMeasuredDimension(mWidth, mHeight);
     } else if (widthSpecMode == MeasureSpec.AT_MOST) {
