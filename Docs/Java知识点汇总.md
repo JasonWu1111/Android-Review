@@ -661,6 +661,16 @@ public class CustomManager{
 缺点在于无法传递参数，如Context等
 
 # 线程
+线程是进程中可独立执行的最小单位，也是 CPU 资源（时间片）分配的基本单位。同一个进程中的线程可以共享进程中的资源，如内存空间和文件句柄。
+
+## 属性
+| 属性 | 说明 
+|--|--
+| id | 线程 id 用于标识不同的线程。编号可能被后续创建的线程使用。编号是只读属性，不能修改
+| name | 名字的默认值是 Thread-(id)
+| daemon | 分为守护线程和用户线程，我们可以通过 setDaemon(true) 把线程设置为守护线程。守护线程通常用于执行不重要的任务，比如监控其他线程的运行情况，GC 线程就是一个守护线程。setDaemon() 要在线程启动前设置，否则 JVM 会抛出非法线程状态异常，可被继承。
+| priority | 线程调度器会根据这个值来决定优先运行哪个线程（不保证），优先级的取值范围为 1~10，默认值是 5，可被继承。Thread 中定义了下面三个优先级常量：<br>- 最低优先级：MIN_PRIORITY = 1<br>- 默认优先级：NORM_PRIORITY = 5<br>- 最高优先级：MAX_PRIORITY = 10
+
 ## 状态
 ![](https://pic2.zhimg.com/80/v2-326a2be9b86b1446d75b6f52f54c98fb_hd.jpg)
 
@@ -668,8 +678,8 @@ public class CustomManager{
 |--|--
 | New | 新创建了一个线程对象，但还没有调用start()方法。
 | Runnable | Ready 状态 线程对象创建后，其他线程(比如 main 线程）调用了该对象的 start() 方法。该状态的线程位于可运行线程池中，等待被线程调度选中 获取 cpu 的使用权。Running 绪状态的线程在获得 CPU 时间片后变为运行中状态（running）。
-| Blocked | 线程因为某种原因放弃了cpu 使用权，暂时停止运行
-| Waiting | 进入该状态的线程需要等待其他线程做出一些特定动作（通知或中断）。
+| Blocked | 线程因为某种原因放弃了cpu 使用权（等待锁），暂时停止运行
+| Waiting | 线程进入等待状态因为以下几个方法：<br>- Object#wait()<br>- Thread#join()<br>- LockSupport#park()
 | Timed Waiting | 有等待时间的等待状态。
 | Terminated | 表示该线程已经执行完毕。
 
