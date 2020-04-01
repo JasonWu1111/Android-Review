@@ -963,14 +963,33 @@ target_link_libraries( # Specifies the target library.
 | 物理层 | 提供二进制流传输服务，也就是真正开始通过传输介质（有线、无线）开始进行数据的传输
 
 ## Http 相关
-### 请求报文与响应报文
-- 请求报文
-  
-| 名称 | 组成
+### 请求报文
+http 请求由三部分组成，分别是：请求行、请求头、请求体
+
+请求行以一个方法符号开头，以空格分开，格式如下：
+**Method Request-URI HTTP-Version CRLF** 
+
+| 名称 | 说明
 | -- | --
-| 请求行 | 请求方法如 post/get、请求路径 url、协议版本等
-| 请求头 | 即 header，里面包含了很多字段
-| 请求体 | 发送的数据
+| Method | 请求方法如 post/get
+| Request-URI | 资源标识符（请求路径）
+| HTTP-Version | 请求的HTTP协议版本
+| CRLF | 回车和换行（除了作为结尾的CRLF外，不允许出现单独的CR或LF字符）
+
+- 请求方法
+  
+| 名称 | 说明
+| -- | --
+| GET | 请求获取 Request-URI 所标识的资源
+| POST | 在 Request-URI 所标识的资源后附加新的数据
+| HEAD | 请求获取由 Request-URI 所标识的资源的响应消息报头
+| PUT | 请求服务器存储一个资源，并用 Request-URI 作为其标识
+| DELETE | 请求服务器删除 Request-URI 所标识的资源
+| TRACE | 请求服务器回送收到的请求信息，主要用于测试或诊断
+| CONNECT | 保留将来使用
+| OPTIONS | 请求查询服务器的性能，或者查询与资源相关的选项和需求
+
+### 响应报文
 
 - 响应报文
 
