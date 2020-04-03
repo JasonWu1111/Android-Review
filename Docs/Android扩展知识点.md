@@ -1,3 +1,44 @@
+- [ART](#art)
+  - [ART 功能](#art-%e5%8a%9f%e8%83%bd)
+    - [预先 (AOT) 编译](#%e9%a2%84%e5%85%88-aot-%e7%bc%96%e8%af%91)
+    - [垃圾回收优化](#%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6%e4%bc%98%e5%8c%96)
+    - [开发和调试方面的优化](#%e5%bc%80%e5%8f%91%e5%92%8c%e8%b0%83%e8%af%95%e6%96%b9%e9%9d%a2%e7%9a%84%e4%bc%98%e5%8c%96)
+  - [ART GC](#art-gc)
+- [Apk 包体优化](#apk-%e5%8c%85%e4%bd%93%e4%bc%98%e5%8c%96)
+  - [Apk 组成结构](#apk-%e7%bb%84%e6%88%90%e7%bb%93%e6%9e%84)
+  - [整体优化](#%e6%95%b4%e4%bd%93%e4%bc%98%e5%8c%96)
+  - [资源优化](#%e8%b5%84%e6%ba%90%e4%bc%98%e5%8c%96)
+  - [代码优化](#%e4%bb%a3%e7%a0%81%e4%bc%98%e5%8c%96)
+  - [.arsc文件优化](#arsc%e6%96%87%e4%bb%b6%e4%bc%98%e5%8c%96)
+  - [lib目录优化](#lib%e7%9b%ae%e5%bd%95%e4%bc%98%e5%8c%96)
+- [Hook](#hook)
+  - [基本流程](#%e5%9f%ba%e6%9c%ac%e6%b5%81%e7%a8%8b)
+  - [使用示例](#%e4%bd%bf%e7%94%a8%e7%a4%ba%e4%be%8b)
+- [Proguard](#proguard)
+  - [公共模板](#%e5%85%ac%e5%85%b1%e6%a8%a1%e6%9d%bf)
+  - [常用的自定义混淆规则](#%e5%b8%b8%e7%94%a8%e7%9a%84%e8%87%aa%e5%ae%9a%e4%b9%89%e6%b7%b7%e6%b7%86%e8%a7%84%e5%88%99)
+  - [aar中增加独立的混淆配置](#aar%e4%b8%ad%e5%a2%9e%e5%8a%a0%e7%8b%ac%e7%ab%8b%e7%9a%84%e6%b7%b7%e6%b7%86%e9%85%8d%e7%bd%ae)
+  - [检查混淆和追踪异常](#%e6%a3%80%e6%9f%a5%e6%b7%b7%e6%b7%86%e5%92%8c%e8%bf%bd%e8%b8%aa%e5%bc%82%e5%b8%b8)
+- [架构](#%e6%9e%b6%e6%9e%84)
+  - [MVC](#mvc)
+  - [MVP](#mvp)
+  - [MVVM](#mvvm)
+- [Jetpack](#jetpack)
+  - [架构](#%e6%9e%b6%e6%9e%84-1)
+  - [使用示例](#%e4%bd%bf%e7%94%a8%e7%a4%ba%e4%be%8b-1)
+- [NDK 开发](#ndk-%e5%bc%80%e5%8f%91)
+  - [JNI 基础](#jni-%e5%9f%ba%e7%a1%80)
+    - [数据类型](#%e6%95%b0%e6%8d%ae%e7%b1%bb%e5%9e%8b)
+    - [String 字符串函数操作](#string-%e5%ad%97%e7%ac%a6%e4%b8%b2%e5%87%bd%e6%95%b0%e6%93%8d%e4%bd%9c)
+    - [常用 JNI 访问 Java 对象方法](#%e5%b8%b8%e7%94%a8-jni-%e8%ae%bf%e9%97%ae-java-%e5%af%b9%e8%b1%a1%e6%96%b9%e6%b3%95)
+  - [NDK 开发](#ndk-%e5%bc%80%e5%8f%91-1)
+    - [基础开发流程](#%e5%9f%ba%e7%a1%80%e5%bc%80%e5%8f%91%e6%b5%81%e7%a8%8b)
+    - [System.loadLibrary()](#systemloadlibrary)
+  - [CMake 构建 NDK 项目](#cmake-%e6%9e%84%e5%bb%ba-ndk-%e9%a1%b9%e7%9b%ae)
+  - [常用的 Android NDK 原生 API](#%e5%b8%b8%e7%94%a8%e7%9a%84-android-ndk-%e5%8e%9f%e7%94%9f-api)
+- [类加载器](#%e7%b1%bb%e5%8a%a0%e8%bd%bd%e5%99%a8)
+  - [双亲委托模式](#%e5%8f%8c%e4%ba%b2%e5%a7%94%e6%89%98%e6%a8%a1%e5%bc%8f)
+  - [DexPathList](#dexpathlist)
 # ART
 ART 代表 Android Runtime，其处理应用程序执行的方式完全不同于 Dalvik，Dalvik 是依靠一个 Just-In-Time (JIT) 编译器去解释字节码。开发者编译后的应用代码需要通过一个解释器在用户的设备上运行，这一机制并不高效，但让应用能更容易在不同硬件和架构上运 行。ART 则完全改变了这套做法，在应用安装时就预编译字节码到机器语言，这一机制叫 Ahead-Of-Time (AOT）编译。在移除解释代码这一过程后，应用程序执行将更有效率，启动更快。
 
@@ -951,234 +992,6 @@ target_link_libraries( # Specifies the target library.
 | 21 | 原生媒体 API | #include <media/NdkMediaCodec.h><br>#include <media/NdkMediaCrypto.h><br>···
 | 24 | 原生相机 API | #include <camera/NdkCameraCaptureSession.h><br>#include <camera/NdkCameraDevice.h><br>···
 | ···
-
-# 计算机网络基础
-## 网络体系的分层结构
-| 分层 | 说明
-| -- | --
-| 应用层（HTTP、FTP、DNS、SMTP 等）| 定义了如何包装和解析数据，应用层是 http 协议的话，则会按照协议规定包装数据，如按照请求行、请求头、请求体包装，包装好数据后将数据传至运输层
-| 运输层（TCP、UDP 等） | 运输层有 TCP 和 UDP 两种，分别对应可靠和不可靠的运输。在这一层，一般都是和 Socket 打交道，Socket 是一组封装的编程调用接口，通过它，我们就能操作 TCP、UDP 进行连接的建立等。这一层指定了把数据送到对应的端口号
-| 网络层（IP 等） | 这一层IP协议，以及一些路由选择协议等等，所以这一层的指定了数据要传输到哪个IP地址。中间涉及到一些最优线路，路由选择算法等
-| 数据链路层（ARP）| 负责把 IP 地址解析为 MAC 地址，即硬件地址，这样就找到了对应的唯一的机器
-| 物理层 | 提供二进制流传输服务，也就是真正开始通过传输介质（有线、无线）开始进行数据的传输
-
-## Http 相关
-### 请求报文
-http 请求由三部分组成，分别是：请求行、请求头、请求体
-
-请求行以一个方法符号开头，以空格分开，格式如下：
-**Method Request-URI HTTP-Version CRLF** 
-
-| 名称 | 说明
-| -- | --
-| Method | 请求方法如 post/get
-| Request-URI | 资源标识符（请求路径）
-| HTTP-Version | 请求的HTTP协议版本
-| CRLF | 回车和换行（除了作为结尾的CRLF外，不允许出现单独的CR或LF字符）
-
-- 请求方法
-  
-| 名称 | 说明
-| -- | --
-| GET | 请求获取 Request-URI 所标识的资源
-| POST | 在 Request-URI 所标识的资源后附加新的数据
-| HEAD | 请求获取由 Request-URI 所标识的资源的响应消息报头
-| PUT | 请求服务器存储一个资源，并用 Request-URI 作为其标识
-| DELETE | 请求服务器删除 Request-URI 所标识的资源
-| TRACE | 请求服务器回送收到的请求信息，主要用于测试或诊断
-| CONNECT | 保留将来使用
-| OPTIONS | 请求查询服务器的性能，或者查询与资源相关的选项和需求
-
-### 响应报文
-
-- 响应报文
-
-| 名称 | 组成
-| -- | --
-| 状态行 | 状态码如 200、协议版本等
-| 响应头 | 即返回的 header
-| 响应体 | 响应的正文数据 |
-
-### 常见状态码
-#### 2XX 成功
-- 200 OK，表示从客户端发来的请求在服务器端被正确处理
-- 204 No content，表示请求成功，但响应报文不含实体的主体部分
-- 206 Partial Content，进行范围请求
-
-#### 3XX 重定向
-- 301 moved permanently，永久性重定向，表示资源已被分配了新的 URL
-- 302 found，临时性重定向，表示资源临时被分配了新的 URL
-- 303 see other，表示资源存在着另一个 URL，应使用 GET 方法丁香获取资源
-- 304 not modified，表示服务器允许访问资源，但因发生请求未满足条件的情况
-- 307 temporary redirect，临时重定向，和 302 含义相同
-
-#### 4XX 客户端错误
-- 400 bad request，请求报文存在语法错误
-- 401 unauthorized，表示发送的请求需要有通过 HTTP 认证的认证信息
-- 403 forbidden，表示对请求资源的访问被服务器拒绝
-- 404 not found，表示在服务器上没有找到请求的资源
-
-#### 5XX 服务器错误
-- 500 internal sever error，表示服务器端在执行请求时发生了错误
-- 503 service unavailable，表明服务器暂时处于超负载或正在停机维护，无法处理请求
-
-### 缓存机制
-![](https://upload-images.jianshu.io/upload_images/1445840-c3465ef477e24416.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/930/format/webp)
-
-- Cache-control 主要包含以下几个字段：
-
-| 字段 | 说明
-| -- | --
-| private | 只有客户端可以缓存
-| public | 客户端和代理服务器都可以缓存
-| max-age | 缓存的过期时间
-| no-cache | 需要使用对比缓存来验证缓存数据，如果服务端确认资源没有更新，则返回304，取本地缓存即可，如果有更新，则返回最新的资源。做对比缓存与 Etag 有关。
-| no-store | 这个字段打开，则不会进行缓存，也不会取缓存
-
-- Etag：当客户端发送第一次请求时服务端会下发当前请求资源的标识码 Etag ，下次再请求时，客户端则会通过 header 里的 If-None-Match 将这个标识码 Etag 带上，服务端将客户端传来的 Etag 与最新的资源 Etag 做对比，如果一样，则表示资源没有更新，返回304。
-
-### Https
-Https 保证了我们数据传输的安全，Https = Http + Ssl，之所以能保证安全主要的原理就是利用了非对称加密算法，平常用的对称加密算法之所以不安全，是因为双方是用统一的密匙进行加密解密的，只要双方任意一方泄漏了密匙，那么其他人就可以利用密匙解密数据。
-
-### Http 2.0
-Okhttp 支持配置使用 Http 2.0 协议，Http2.0 相对于 Http1.x 来说提升是巨大的，主要有以下几点：
-- **二进制格式**：http1.x 是文本协议，而 http2.0 是二进制以帧为基本单位，是一个二进制协议，一帧中除了包含数据外同时还包含该帧的标识：Stream Identifier，即标识了该帧属于哪个 request,使得网络传输变得十分灵活。
-- **多路复用**：多个请求共用一个TCP连接，多个请求可以同时在这个 TCP 连接上并发，一个是解决了建立多个 TCP 连接的消耗问题，一个也解决了效率的问题。
-- **header 压缩**：主要是通过压缩 header 来减少请求的大小，减少流量消耗，提高效率。
-- **支持服务端推送**
-
-## TCP/IP
-IP（Internet Protocol）协议提供了主机和主机间的通信，为了完成不同主机的通信，我们需要某种方式来唯一标识一台主机，这个标识，就是著名的 IP 地址。通过IP地址，IP 协议就能够帮我们把一个数据包发送给对方。
-
-TCP 的全称是 Transmission Control Protocol，TCP 协议在 IP 协议提供的主机间通信功能的基础上，完成这两个主机上进程对进程的通信。
-
-### 三次握手
-所谓三次握手(Three-way Handshake)，是指建立一个 TCP 连接时，需要客户端和服务器总共发送3个包。
-
-三次握手的目的是连接服务器指定端口，建立 TCP 连接，并同步连接双方的序列号和确认号，交换 TCP 窗口大小信息。在 socket 编程中，客户端执行 connect() 时。将触发三次握手。
-
-![](https://raw.githubusercontent.com/HIT-Alibaba/interview/master/img/tcp-connection-made-three-way-handshake.png)
-
-- 第一次握手(SYN=1, seq=x):
-
-客户端发送一个 TCP 的 SYN 标志位置 1 的包，指明客户端打算连接的服务器的端口，以及初始序号 X，保存在包头的序列号 (Sequence Number) 字段里。
-
-发送完毕后，客户端进入 ``SYN_SEND`` 状态。
-
-- 第二次握手(SYN=1, ACK=1, seq=y, ACKnum=x+1):
-
-服务器发回确认包(ACK)应答。即 SYN 标志位和 ACK 标志位均为 1。服务器端选择自己 ISN 序列号，放到 Seq 域里，同时将确认序号(Acknowledgement Number)设置为客户的 ISN 加1，即 X+1。 发送完毕后，服务器端进入 ``SYN_RCVD`` 状态。
-
-- 第三次握手(ACK=1，ACKnum=y+1)
-
-客户端再次发送确认包(ACK)，SYN 标志位为 0，ACK 标志位为 1，并且把服务器发来 ACK 的序号字段 +1，放在确定字段中发送给对方，并且在数据段放写 ISN 的 +1
-
-发送完毕后，客户端进入 ESTABLISHED 状态，当服务器端接收到这个包时，也进入 ESTABLISHED 状态，TCP 握手结束。
-
-### 四次挥手
-TCP 的连接的拆除需要发送四个包，因此称为四次挥手(Four-way handshake)，也叫做改进的三次握手。客户端或服务器均可主动发起挥手动作，在 socket 编程中，任何一方执行 close() 操作即可产生挥手操作。
-
-![](https://raw.githubusercontent.com/HIT-Alibaba/interview/master/img/tcp-connection-closed-four-way-handshake.png)
-
-- 第一次挥手(FIN=1，seq=x)
-
-假设客户端想要关闭连接，客户端发送一个 FIN 标志位置为1的包，表示自己已经没有数据可以发送了，但是仍然可以接受数据。
-
-发送完毕后，客户端进入 FIN_WAIT_1 状态。
-
-- 第二次挥手(ACK=1，ACKnum=x+1)
-
-服务器端确认客户端的 FIN 包，发送一个确认包，表明自己接受到了客户端关闭连接的请求，但还没有准备好关闭连接。
-
-发送完毕后，服务器端进入 CLOSE_WAIT 状态，客户端接收到这个确认包之后，进入 FIN_WAIT_2 状态，等待服务器端关闭连接。
-
-- 第三次挥手(FIN=1，seq=y)
-
-服务器端准备好关闭连接时，向客户端发送结束连接请求，FIN 置为1。
-
-发送完毕后，服务器端进入 LAST_ACK 状态，等待来自客户端的最后一个ACK。
-
-- 第四次挥手(ACK=1，ACKnum=y+1)
-
-客户端接收到来自服务器端的关闭请求，发送一个确认包，并进入 TIME_WAIT状态，等待可能出现的要求重传的 ACK 包。
-
-服务器端接收到这个确认包之后，关闭连接，进入 CLOSED 状态。
-
-客户端等待了某个固定时间（两个最大段生命周期，2MSL，2 Maximum Segment Lifetime）之后，没有收到服务器端的 ACK ，认为服务器端已经正常关闭连接，于是自己也关闭连接，进入 CLOSED 状态。
-
-### TCP 与 UDP 的区别
-| 区别点    | TCP      | UDP    |
-| -------- | -------- | ------ |
-| 连接性   | 面向连接 | 无连接 |
-| 可靠性   | 可靠     | 不可靠|
-| 有序性   | 有序     | 无序   |
-| 面向     | 字节流     | 报文（保留报文的边界） |
-| 有界性   | 有界     | 无界   |
-| 流量控制 | 有（滑动窗口） | 无     |
-| 拥塞控制 | 有（慢开始、拥塞避免、快重传、快恢复）       | 无 |
-| 传输速度 | 慢       | 快     |
-| 量级     | 重量级   | 轻量级 |
-| 双工性     | 全双工   | 一对一、一对多、多对一、多对多 |
-| 头部 | 大（20-60 字节）       | 小（8 字节）     |
-| 应用 | 文件传输、邮件传输、浏览器等 | 即时通讯、视频通话等     |
-
-## Socket
-Socket 是一组操作 TCP/UDP 的 API，像 HttpURLConnection 和 Okhttp 这种涉及到比较底层的网络请求发送的，最终当然也都是通过 Socket 来进行网络请求连接发送，而像 Volley、Retrofit 则是更上层的封装。
-
-### 使用示例
-使用 socket 的步骤如下：
-- 创建 ServerSocket 并监听客户连接；
-- 使用 Socket 连接服务端；
-- 通过 Socket.getInputStream()/getOutputStream() 获取输入输出流进行通信。
-
-```java
-public class EchoClient {
- 
-    private final Socket mSocket;
- 
-    public EchoClient(String host, int port) throws IOException {
-        // 创建 socket 并连接服务器
-        mSocket = new Socket(host, port);
-    }
- 
-    public void run() {
-        // 和服务端进行通信
-        Thread readerThread = new Thread(this::readResponse);
-        readerThread.start();
- 
-        OutputStream out = mSocket.getOutputStream();
-        byte[] buffer = new byte[1024];
-        int n;
-        while ((n = System.in.read(buffer)) > 0) {
-            out.write(buffer, 0, n);
-        }
-    }
-
-    private void readResponse() {
-        try {
-            InputStream in = mSocket.getInputStream();
-            byte[] buffer = new byte[1024];
-            int n;
-            while ((n = in.read(buffer)) > 0) {
-                System.out.write(buffer, 0, n);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
- 
- 
-    public static void main(String[] argv) {
-        try {
-            // 由于服务端运行在同一主机，这里我们使用 localhost
-            EchoClient client = new EchoClient("localhost", 9877);
-            client.run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-}
-```
 
 # 类加载器
 ![](https://img-blog.csdn.net/20161021101447117?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center)
