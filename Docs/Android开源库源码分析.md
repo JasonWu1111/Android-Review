@@ -1,3 +1,11 @@
+- [LeakCanary](#leakcanary)
+  - [初始化注册](#%e5%88%9d%e5%a7%8b%e5%8c%96%e6%b3%a8%e5%86%8c)
+  - [引用泄漏观察](#%e5%bc%95%e7%94%a8%e6%b3%84%e6%bc%8f%e8%a7%82%e5%af%9f)
+  - [Dump Heap](#dump-heap)
+- [EventBus](#eventbus)
+  - [自定义注解](#%e8%87%aa%e5%ae%9a%e4%b9%89%e6%b3%a8%e8%a7%a3)
+  - [注册订阅者](#%e6%b3%a8%e5%86%8c%e8%ae%a2%e9%98%85%e8%80%85)
+  - [发送事件](#%e5%8f%91%e9%80%81%e4%ba%8b%e4%bb%b6)
 # LeakCanary
 ![](http://ww1.sinaimg.cn/large/006dXScfly1fj22w7flt4j30z00mrtc0.jpg)
 
