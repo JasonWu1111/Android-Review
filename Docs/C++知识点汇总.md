@@ -384,4 +384,4 @@ RTTI机制
 左值 右值
 decltype
 constexpr
-shared_ptr
+智能指针
