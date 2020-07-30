@@ -25,6 +25,11 @@
   - [static_cast](#static_cast)
   - [dynamic_cast](#dynamic_cast)
   - [reinterupt_cast](#reinterupt_cast)
+- [智能指针](#智能指针)
+  - [unique_ptr](#unique_ptr)
+  - [shared_ptr](#shared_ptr)
+  - [weak_ptr](#weak_ptr)
+- [内存空间](#内存空间)
 ## 数据类型
 |类型	|位
 |--|--|--
@@ -375,13 +380,33 @@ reinterpret_cast 用来处理无关类型转换，通常为操作数的位模式
 
 错误的使用 reinterpret_cast 很容易导致程序的不安全，只有将转换后的类型值转换回到其原始类型，这样才是正确使用 reinterpret_cast 方式。
 
+## 智能指针
+### unique_ptr
+由 unique_ptr 管理的内存，只能被一个对象持有，所以，unique_ptr不支持复制和赋值。想要把一个 unique_ptr 的内存交给另外一个 unique_ptr 对象管理。只能使用 std::move 转移当前对象的所有权。转移之后，当前对象不再持有此内存，新的对象将获得专属所有权。
+```cpp
+auto w = std::make_unique<Widget>();
+auto w2 = std::move(w); // w2 获得内存所有权，w 此时等于 nullptr
+```
 
-内存空间
-对象、引用
+unique_ptr在默认情况下和裸指针的大小是一样的，所以内存上没有任何的额外消耗，性能是最优的。
 
-RTTI机制
+### shared_ptr
+多个智能指针可以共享同一个对象。shared_ptr 内部是利用引用计数来实现内存的自动管理，每当复制一个 shared_ptr，引用计数会 +1。当一个 shared_ptr 离开作用域时，引用计数会 -1。当引用计数为0的时候，则 delete 内存。
 
-左值 右值
-decltype
-constexpr
-智能指针
+```cpp
+auto w = std::make_shared<Widget>();
+```
+
+shared_ptr的内存占用是裸指针的两倍。因为除了要管理一个裸指针外，还要维护一个引用计数。
+
+### weak_ptr
+允许你共享但不拥有某对象，一旦最末一个拥有该对象的智能指针失去了所有权，任何 weak_ptr 都会自动成空。
+
+## 内存空间
+|区|秒速
+|--|--
+|堆|操作系统维护的一块动态分配内存，malloc 在堆上分配的内存块，使用 free 释放内存
+|栈|由编译器自动分配释放，存放函数的参数值，局部变量的值等
+|自由存储区|C++ 中通过 new 与 delete 动态分配和释放对象的抽象概念
+|全局区（静态区）|全局变量和静态变量分配在此一块内存中
+|常量存储区|存储常量字符串, 程序结束后由系统释放
